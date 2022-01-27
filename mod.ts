@@ -11,7 +11,10 @@ const mimes : {[key: string]: string} = {
 };
 
 async function handler(request: Request): Promise<Response> {
-  const { pathname } = new URL(request.url);
+  let { pathname } = new URL(request.url);
+  if (pathname.endsWith('/')) {
+    pathname = `${pathname}index.html`;
+  }
   const m = pathname.match(/\.(html|css|js|jpg|jpeg|png|svg)$/);
   if (m && mimes[m[1]]) {
     try {
