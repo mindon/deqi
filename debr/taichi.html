@@ -1,0 +1,139 @@
+<!DOCTYPE html><html><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>太极圆运动 - Taichi</title>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3JHEY0K5KG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3JHEY0K5KG');
+  </script>
+  <style>
+    .container {
+      max-width: 960px;padding: 0.25rem; margin: 0 auto;
+    }
+  </style>
+  <style>
+@keyframes r {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+@keyframes c1 {
+  from { background-color: #333; }
+  50% { background-color: #c30; }
+  to { background-color: #333; }
+}
+@keyframes c2 {
+  from { background-color: #c30; }
+  50% { background-color: #333; }
+  to { background-color: #c30; }
+}
+
+.yinyang {
+  width:360px; height: 360px;
+  overflow: hidden;
+	margin: 64px auto;
+}
+
+.yinyang, #svgelem {
+  animation-name: r; 
+  animation-duration: 3s; 
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.yin, .yang {
+  width: 50%;
+  height: 100%;
+  float: left;
+  position: relative;
+}
+
+.yin {
+  background-color: #333;
+  border-radius: 180px 0 0 180px;
+}
+
+.yin, .yinc, .yangd {
+  animation-name: c1; 
+  animation-duration: 3s; 
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+}
+
+.yang, .yangc, .yind {
+  animation-name: c2; 
+  animation-duration: 3s; 
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+}
+
+.yang {
+  background-color: #c30;
+  border-radius: 0 180px 180px 0;
+}
+
+.yinc {
+  width: 100%;
+  height: 50%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 11;
+}
+
+.yangc {
+  width: 100%;
+  height: 50%;
+  background-color: #c30;
+  border-radius: 100%;
+  position: absolute;
+  top: 0;
+  right: 50%;
+  z-index: 9;
+}
+
+.yind {
+  width: 25%;
+  height: 25%;
+  background-color: #c30;
+  border-radius: 50%;
+  z-index: 10;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -12.5%;
+  margin-top: -12.5%;
+}
+
+.yangd {
+  width: 25%;
+  height: 25%;
+  background-color: #333;
+  border-radius: 50%;
+  z-index: 10;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -12.5%;
+  margin-top: -12.5%;
+}
+p {
+  text-align: center;
+}
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center">太极图，圆运动</h1>
+  <div class="container">
+    <p>太极双鱼图，分解为圆。灵感来源于《<a href="https://www.zysj.com.cn/lilunshuji/yuanyundongdeguzhongyixue/index.html" target="_blank">圆运动的古中医学</a>》，阳升阴降之间的转化。</p>
+    <div class="yinyang">
+      <div class="yin"><div class="yinc"><div class="yind"></div></div></div>
+      <div class="yang"><div class="yangc"><div class="yangd"></div></div></div>
+    </div>
+  </div>
+</body></html>
