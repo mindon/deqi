@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+    <title>t.q.lab logo + colors</title>
+    <style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+div.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #262626;
+  width: 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+}
+div.stage svg {
+  width: 45vh;
+  height: 45vh;
+}
+#preview {
+  width: 100vw;
+  height: 100vh;
+  scroll-snap-type: y mandatory;
+  overflow-y: auto;
+  position: relative;
+}
+#blocks {
+  position: fixed;
+  bottom: 16px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+a.block {
+  display: block;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 0 32px 0 rgba(255 255 255 / 0.1);
+  cursor: pointer;
+}
+    </style>
+  </head>
+  <body>
+  <div style="width:0;height:0;overflow: hidden;">
+    <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+       version="1.1">
+       <defs>
+        <linearGradient
+         id="bar"
+         gradientUnits="userSpaceOnUse"
+         x1="18.872601"
+         y1="121.7126"
+         x2="18.872601"
+         y2="4.9587002"
+         gradientTransform="translate(-18.95,-17.05)">
+          <stop
+         offset="0"
+         style="stop-color:#0070FF"/>
+          <stop
+         offset="1"
+         style="stop-color:#00EE98" />
+        </linearGradient>
+      </defs>
+      <symbol id="tqlab" 
+       width="100%" 
+       height="100%" 
+       viewBox="0 0 160 160">
+       <g
+       transform="translate(18.95,17.05)"><path
+       fill="#0070FF"
+         d="m 50.3,90.1 v 35.8 l 71.8,-41.4 v -43 L 56.6,79.2 c -3.9,2.2 -6.3,6.4 -6.3,10.9 z" /><path
+       fill="#00EE98" opacity="0.8" 
+         d="M 50.3,35.8 V 0 l 71.8,41.4 v 43 L 56.6,46.7 C 52.7,44.4 50.3,40.3 50.3,35.8 Z" /><path
+         d="m 0,12.6 v 113.2 h 25.2 c 6.9,0 12.6,-5.6 12.6,-12.6 V 0 H 12.6 C 5.6,0 0,5.6 0,12.6 Z"
+         style="fill:url(#bar)" /></g>
+      </symbol>
+      <use xlink:href="#tqlab" style="display:none" />
+    </svg>
+  </div>
+  <div id="preview"></div>
+  <div id="blocks"></div>
+  <div id="current"></div>
+  <script>
+let colors = '#0A1824,#0F2A38,#1D3C43,#2A4930,#132F13,#092409'.split(',');
+const hash = location.hash, m = hash.match(/#?[0-9a-fA-F]{6}/g);
+if (m && m.length > 0) colors = m; else location.hash = colors.join(',');
+const blocks = [];
+function color2(c) {
+  const t = document.querySelector(`#_${c.substr(1)}`);
+  t && t.scrollIntoView(true);
+}
+document.querySelector('#preview').innerHTML = (colors.map(c => {
+  blocks.push(`<a class="block" style="background-color:${c}" onclick="color2('${c}')" title="${c}"></a>`);
+  return `<div class="stage" style="background-color:${c}" id="_${c.substr(1)}"><svg xmlns="http://www.w3.org/2000/svg"><use xlink:href="#tqlab" /></svg></div>`
+}).join('\n'));
+document.querySelector('#blocks').innerHTML = blocks.join('\n');
+  </script>
+  </div>
+  </body>
+</html>
