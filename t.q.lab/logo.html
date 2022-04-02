@@ -86,7 +86,7 @@ a.block {
   <div id="current"></div>
   <script>
 let colors = '#0A1824,#0F2A38,#1D3C43,#2A4930,#132F13,#092409'.split(',');
-const hash = location.hash, m = hash.match(/#?[0-9a-fA-F]{6}/g);
+const hash = unescape(location.hash), m = hash.match(/#?[0-9a-fA-F]{6}/g);
 if (m && m.length > 0) colors = m; else location.hash = colors.join(',');
 const blocks = [];
 function color2(c) {
