@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.122.0/http/server.ts";
 const mimes : {[key: string]: string} = {
   html: 'text/html; charset=utf-8',
   css: 'text/css',
-  js: 'application/javascript',
+  js: 'text/javascript',
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
   png: 'image/png',
