@@ -19,10 +19,14 @@ async function handler(request: Request): Promise<Response> {
   if (m && mimes[m[1]]) {
     try {
       const file = await Deno.readFile(`.${pathname}`);
+      const headers = {
+        'content-type': mimes[m[1]],
+      };
+      if (pathname.startWith('/lib/')) {
+        headers['Access-Control-Allow-Origin'] = '*';
+      }
       return new Response(file, {
-        headers: {
-          "content-type": mimes[m[1]],
-        },
+        headers,
       });
     } catch(err)  {
       if (err instanceof Deno.errors.NotFound) {
