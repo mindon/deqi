@@ -22,7 +22,7 @@ async function handler(request: Request): Promise<Response> {
       const headers = {
         'content-type': mimes[m[1]],
       };
-      if (pathname.startWith('/lib/')) {
+      if (pathname.startsWith('/lib/')) {
         headers['Access-Control-Allow-Origin'] = '*';
       }
       return new Response(file, {
