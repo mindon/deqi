@@ -8,6 +8,7 @@ const mimes : {[key: string]: string} = {
   jpeg: 'image/jpeg',
   png: 'image/png',
   svg: 'image/svg+xml',
+  csv: 'text/csv',
 };
 
 async function handler(request: Request): Promise<Response> {
@@ -15,7 +16,7 @@ async function handler(request: Request): Promise<Response> {
   if (pathname.endsWith('/')) {
     pathname = `${pathname}index.html`;
   }
-  const m = pathname.match(/\.(html|css|js|jpg|jpeg|png|svg)$/);
+  const m = pathname.match(/\.(html|css|js|jpg|jpeg|png|svg|csv)$/);
   if (m && mimes[m[1]]) {
     try {
       const file = await Deno.readFile(`.${pathname}`);
