@@ -1,0 +1,2 @@
+Qubit,T1 (µs),T2 (µs),Frequency (GHz),Readout error,Single-qubit U2 error rate,CNOT error rate,Date
+Q0,111.54520618973534,170.8648766746029,4.974292066925171,5.349999999999999e-2,1.3277339991187576e-3,,Mon Jun 01 2020 06:28:17 GMT+0800 (China Standard Time)

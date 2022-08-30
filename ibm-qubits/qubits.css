@@ -1,0 +1,185 @@
+body {
+  background-color:#fff;
+  font-family: Roboto, 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+body.dark {
+  background-color:#333;
+}
+div.tooltip {	
+  position: absolute;
+  font-size: 9px;
+  padding: 4px 8px;
+  pointer-events: none;
+  background: rgb(254, 255, 212);
+  color: #00449c;
+  border-radius: 4px;
+  border: 6px solid #dddddd66;
+}
+div.tooltip small {
+  color: #333;
+}
+div.tooltip div.value {
+  color: #d30;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+.qubit {
+  fill: none;
+  stroke: #ff6600;
+}
+.qubit-above-avg {
+  fill: none;
+  stroke: #b13618;
+}
+.mr {
+  fill: none;
+  stroke: #9258582d;
+}
+.chip .arrow {
+  fill: #999999;
+  stroke: none;
+}
+.info-arrow {
+  fill: #000000;
+  stroke: none;
+}
+.cx-link {
+  fill:#9999999c;
+  stroke: #9999999c;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+.cx-none {
+  fill: none;
+  stroke: none;
+}
+.cx-weight {
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+  stroke: #8f2d15;
+}
+.t1, .t2, .freq, .full-t1, .full-t2, .full-freq {
+  fill: none;
+  stroke: #71deff;
+  stroke-width: 2;
+}
+.t2 {
+  stroke: #399ac7;
+}
+.freq {
+  stroke: #11634d;
+}
+.full-t1, .full-t2, .full-freq {
+  stroke: #6666662f;
+}
+.date {
+  font-size: 9pt;
+  color: #333;
+}
+#viewlist .chip, #ffview .chip {
+  margin: 1rem;
+  padding: .5rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+}
+.chip svg {
+  max-width: 100%;
+}
+.chip .info {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -240px;
+  background-color: #f0f0f0dd;
+  overflow: hidden;
+  border-radius: 60px 30px 0 60px;
+  fill: #0090ff;
+}
+.dark .chip .info {
+  background-color: #232323dd;
+}
+
+.chip .qubits {
+  margin-top: 200px;
+  margin-bottom: 60px;
+}
+
+.tips {
+  fill: none;
+  stroke: #666;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+tspan {
+  cursor: default;
+}
+.copyright {
+  font-size: 9pt;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #666;
+}
+.center {
+  text-align: center;
+}
+h1 {
+  margin-bottom: 1rem;
+}
+a.top {
+  position: absolute;
+  top: 190px;
+  left: 50%;
+  margin-left: 190px;
+  z-index: 1;
+}
+a {
+  color: #0084ff;
+  font-size: 9pt;
+  cursor: pointer;
+  text-decoration: none;
+}
+a:hover {
+  color: #68a8fa;
+  text-decoration: underline;
+}
+
+#nav {
+  text-align:center;
+  color: #666;
+  margin-bottom: 2rem;
+}
+.gray {
+  color: #666;
+}
+a[name] {
+  position: absolute;
+  top: -16px;
+  left: 0;
+}
+
+@media (max-width:640px) {
+  .chip .info {
+    margin-left: -160px;
+  }
+  a.top {
+    margin-left: 120px;
+    top: 130px;
+  }
+}
+
+#histories {
+  position: fixed;
+  left: 4px;
+  bottom: 4px;
+}
+#histories a {
+  display: block;
+  text-decoration: none;
+  font-size: .8rem;
+}
+#histories a::before {
+  content: '🕒 ';
+}

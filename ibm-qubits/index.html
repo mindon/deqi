@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>IBM Public Qubits' Status</title>
+    <link rel="stylesheet" href="qubits.css?0603">
+    <style>a.active{pointer-events: none; font-size: 2rem!important; text-decoration: none; color: #f60; margin-left:-10px}</style>
+  </head>
+  <body class="dark">
+<h1 class="center">IBM QUBITS' STATUS</h1>
+<p class="center gray"><small>partly (<span id="chipc">0</span>), 2020/06/08 updated, UI designed by Mindon Feng</small></p>
+<div id="nav"></div>
+<div id="ffview" style="position:relative"></div>
+<div id="viewlist"></div>
+<div id="histories">
+  <a href="#0928" class="date-link">0928</a>
+  <a href="#0915" class="date-link">0915</a>
+  <a href="#0825" class="date-link">0825</a>
+  <a href="#0820" class="date-link">0820</a>
+  <a href="#0814" class="date-link">0814</a>
+  <a href="#0716" class="date-link">0716</a>
+  <a href="#0709" class="date-link">0709</a>
+  <a href="#0703" class="date-link">0703</a>
+  <a href="#0630" class="date-link">0630</a>
+  <a href="#0623" class="date-link">0623</a>
+  <a href="#0621" class="date-link">0621</a>
+  <a href="#0619" class="date-link">0619</a>
+  <a href="#0618" class="date-link">0618</a>
+  <a href="#0616" class="date-link">0616</a>
+  <a href="#0608" class="date-link">0608</a>
+  <a href="#0606" class="date-link">0606</a>
+  <a href="#0604" class="date-link">0604</a>
+  <a href="#0602" class="date-link">0602</a>
+  <a href="#0601" class="date-link">0601</a>
+  <a href="#0531" class="date-link">0531</a>
+  <a href="#0530" class="date-link">0530</a>
+  <a href="#0528" class="date-link">0528</a>
+</div>
+<div class="copyright">2020 Mindon</div>
+<input id="mydata" type="file" style="display:none"/>
+<script src="d3.min.js"></script>
+<script src="qubits.js"></script>
+<script>
+document.querySelector('#mydata').addEventListener('change', function(evt){
+  const files = evt.target.files;
+  if(!files || files.length == 0) return;
+  const r = new FileReader(),
+    chip = files[0].name.replace(/\.csv$/, '');
+  r.onload = ()=>{
+    const qubits = d3.csvParse(r.result);
+    // console.log(JSON.stringify(resp, null, '\t'));
+    let layout = {}, cols = 6;
+    for (let i = 0; i < qubits.length; i++) {
+      layout[qubits[i].Qubit] = [Math.floor(i/cols), i%cols];
+    }
+    const { info, view } = chipView(qubits, { layout: layouts[chip] || (qubits.length==5?T5 : layout)});
+    const div = document.createElement("div");
+    div.className = "chip";
+    div.appendChild(detailNode(chip.replace(/_/g, " "), info));
+    div.append(view);
+    const ffview = document.querySelector('#ffview');
+    ffview.insertBefore(div, ffview.firstChild);
+  };
+  r.readAsText(files[0], "utf-8");
+});
+function ff(){
+  document.querySelector('#mydata').click();
+}
+
+const T5 = {
+  'Q0': [0,0],
+  'Q1': [0,1],
+  'Q2': [0,2],
+  'Q3': [1,1],
+  'Q4': [2,1]
+};
+const layouts = {
+  'ibmq_16_melbourne': {
+    'Q0': [0,0],
+    'Q1': [0,1],
+    'Q2': [0,2],
+    'Q3': [0,3],
+    'Q4': [0,4],
+    'Q5': [0,5],
+    'Q6': [0,6],
+    'Q7': [1,7],
+    'Q8': [1,6],
+    'Q9': [1,5],
+    'Q10': [1,4],
+    'Q11': [1,3],
+    'Q12': [1,2],
+    'Q13': [1,1],
+    'Q14': [1,0]
+  },
+  'ibmq_rome': {
+    'Q0': [0,0],
+    'Q1': [0,1],
+    'Q2': [0,2],
+    'Q3': [0,3],
+    'Q4': [0,4]
+  },
+  'ibmq_london': T5,
+  'ibmq_burlington': T5,
+  'ibmq_essex': T5,
+  'ibmq_ourense': T5,
+  'ibmq_vigo': T5,
+  'ibmq_valencia': T5,
+  'ibmq_5_yorktown': {
+    'Q0': [1,0],
+    'Q1': [0,1],
+    'Q2': [1,1],
+    'Q3': [1,2],
+    'Q4': [2,1]
+  }
+};
+
+let chips = [
+  'ibmq_16_melbourne',
+  'ibmq_rome',
+  'ibmq_london',
+  'ibmq_burlington',
+  'ibmq_essex',
+  'ibmq_ourense',
+  'ibmq_vigo',
+  'ibmq_5_yorktown',
+  'ibmq_armonk'
+];
+d3.select('#chipc').text(chips.length);
+
+let links = [], ldn = 0;
+
+function allr() {
+  if(/#ibmq_[\w_-]+$/.test(location.hash)) {
+    const k = document.querySelector('a[name="'+location.hash.substr(1)+'"]');
+    if(k) k.scrollIntoView(true);
+  }
+}
+
+const vl = document.querySelector("#viewlist");
+let calibrated = document.querySelector('#histories a:first-child').getAttribute('href').substr(1);
+if(/^#\d{4}$/.test(location.hash)) {
+  calibrated = location.hash.substr(1);
+}
+let xchips = {}, nchips = {};
+let chipsRemoved = {'0630':['ibmq_rome']};
+let chipsAppended = {'0814': ['ibmq_santiago', 'ibmq_valencia']};
+for(let k in chipsAppended) {
+  chips = chips.concat(chipsAppended[k]);
+  chipsAppended[k].forEach(c=>{
+    nchips[c] = k;
+  });
+}
+
+for(let k in chipsRemoved) {
+  chipsRemoved[k].forEach(c=>{
+    xchips[c] = k;
+  });
+}
+
+function render(calibrated, cb) {
+    chips.forEach(chip=>{
+		let k = xchips[chip];
+		if(k && calibrated>k) {
+			view(chip, k, vl, cb);
+			return;
+		}
+		k = nchips[chip];
+		if(k && calibrated<k) {
+			view(chip, k, vl, cb);
+			return;
+		}
+
+		view(chip, calibrated, vl, cb);
+	});
+}
+window.addEventListener('hashchange',function(){
+  if(/^#\d{4}$/.test(location.hash)) {
+    calibrated = location.hash.substr(1);
+	render(calibrated);
+    document.querySelector('#histories a.active').classList.remove('active');
+    document.querySelector('#histories a[href="#'+calibrated+'"]').classList.add('active');
+  }
+});
+
+render(calibrated, ()=>{
+  ldn++;
+  if(ldn == chips.length) {
+    allr();
+  }
+});
+chips.forEach(chip=>{
+  links.push(`<a href="#${chip}">${chip.substr(5)}</a>`);
+});
+links.push('<a href="javascript:void(ff())">...</a>');
+d3.select('#nav').html(links.join(' | '));
+
+document.querySelector('#histories a[href="#'+calibrated+'"]').classList.add('active');
+const dl = Array.prototype.slice.apply(document.querySelectorAll('#histories a')).map(d=>d.getAttribute('href').substr(1));
+let i = dl.indexOf(calibrated);
+document.addEventListener('keydown', function(evt){
+  const key = evt.keyCode;
+  if(key != 37 && key != 39) {
+    return;
+  }
+  if(key == 39) {
+    i = (dl.length +i-1)%dl.length;
+  } else if(key == 37) {
+    i = (i+1)%dl.length;
+  }
+  if(dl[i]) window.location.hash = '#' +dl[i];
+})
+</script>
+  </body>
+</html>
