@@ -27,7 +27,7 @@
     <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="b"></canvas>
     <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="#"></canvas></div>
     <a><canvas class="field-fx" data-src="/img/mindon.png" data-origin="" data-rgb="*"></canvas></a>
-    <script type="module" src="field.1334a4cf445523a482250660bdd0b939.js"></script>
+    <script type="module" src="field.6f5dff81d1fe88f945a4da5c49e83131.js"></script>
     <script>
       const a = document.querySelector('a');
       const flinp = document.createElement('input');
@@ -53,6 +53,9 @@
       });
       a.addEventListener('click', () => {
         flinp.click();
+      });
+      window.addEventListener('field-fx-ready', () => {
+        a.querySelector('canvas').play([{rgb:'r'}, {rgb:'g'}, {rgb:'b'}, {rgb:'#'}, {rgb:'*', dur: 1}]);
       });
     </script>
   
