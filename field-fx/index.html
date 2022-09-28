@@ -9,7 +9,7 @@
       justify-content: center;
       min-height: 100vh;
     }
-    canvas {
+    canvas.field-fx {
       margin: .25rem;
     }
     div, a {
@@ -33,13 +33,16 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRXD8X"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-    <div><canvas class="field-fx" data-src="/img/mindon.png" data-rgb="r"></canvas>
-    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="g"></canvas>
-    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="b"></canvas>
-    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="#"></canvas></div>
+
+    <div>
+	    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="r"></canvas>
+	    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="g"></canvas>
+	    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="b"></canvas>
+	    <canvas class="field-fx" data-src="/img/mindon.png" data-rgb="#"></canvas>
+    </div>
     <a><canvas class="field-fx" data-src="/img/mindon.png" data-origin="" data-rgb="*"></canvas></a>
-    <canvas id="mykq" data-src="/img/kq.jpeg" data-rgb="#" data-area="340,14,80,80" data-zoom="3"></canvas>
-    <script type="module" src="field.c60c7f39e16e049b086368769c2604ba.js"></script>
+    <div><canvas id="mykq" data-src="/img/kq.jpeg" data-rgb="#" data-area="340,14,80,80" data-zoom="3"></canvas></div>
+    <script type="module" src="field.528c0d288e8b6778c05f0a5686c42e93.js"></script>
     <script>
       const a = document.querySelector('a');
       function loadr(evt) {
@@ -70,16 +73,17 @@
         flinp.click();
       });
       window.addEventListener('field-fx-ready', () => {
-        a.querySelector('canvas').play([{rgb:'r'}, {rgb:'g'}, {rgb:'b'}, {rgb:'#'}, {rgb:'*', dur: 1}]);
+        a.querySelector('canvas').play([{rgb:'r',dur:1}, {rgb:'g',dur:1}, {rgb:'b',dur:1}, {rgb:'#',dur:2}, {rgb:'rgb',dur:3}]);
 
         // kq animation with clips
         const mykq = document.querySelector('#mykq');
         fieldFx(mykq);
         const sampling = Array.from(Array(890).keys());
-        mykq.play(sampling.map(i => ({area: [664, -100 + i *2, 180, 180], dur: 0.01, rgb: '#'}))
-          .concat(sampling.map(i => ({area: [470, -100 + i * 2, 180, 180], dur: 0.01, rgb: '#'})))
-          .concat(Array.from(Array(370).keys()).map(i => ({area: [264, -100 + i * 2, 180, 180], dur: 0.01, rgb: '#'})))
-          .concat(Array.from(Array(470).keys()).map(i => ({area: [80, 720 + i*2, 180, 180], dur: 0.01, rgb: '#'})))
+        const [w, h, dur, rgb] = [180, 180, 0.01, '#'];
+        mykq.play(sampling.map(i => ({area: [664, -100 + i *2, w, h], dur, rgb}))
+          .concat(sampling.map(i => ({area: [470, -100 + i * 2, w, h], dur, rgb})))
+          .concat(Array.from(Array(370).keys()).map(i => ({area: [264, -100 + i * 2, w, h], dur, rgb})))
+          .concat(Array.from(Array(470).keys()).map(i => ({area: [80, 720 + i*2, w, h], dur, rgb})))
           );
       });
     </script>
