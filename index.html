@@ -43,6 +43,10 @@ li.x::marker {
   content: '❜  ';
   color: #ff8c00;
 }
+#atlab {
+  width: 360px; height: 360px; background: #262626; color: #fff;
+  margin: 1rem auto;
+}
     </style>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -77,13 +81,16 @@ li.x::marker {
         <a href="https://go.dev" target="_dev">Golang</a>,
         <a href="https://deno.lang" target="_dev">Deno</a> /
         <a href="https://webassembly.org/" target="_dev">WASM</a>,
-        <a href="https://playwright.dev" target="_dev">Playwright</a>,
-        <a href="https://lit.dev" target="_dev">LitElement</a>,
+        <a href="https://lit.dev" target="_dev">Lit</a> /
         <a href="https://flutter.dev" target="_dev">Flutter</a>,
+        <a href="https://playwright.dev" target="_dev">Playwright</a>,
         ...
       </i>
     </p>
+    <div id="atlab"></div>
   </div>
     </div>
   </body>
+  <script type="module" src="assets/hello.a6dd4f8aa8cd8d4c74dd1c0ea48c3f7b.js"></script>
+  <script type="module">ray(document.querySelector('#atlab'))</script>
 </html>
