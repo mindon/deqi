@@ -24,15 +24,36 @@ async function handler(request: Request): Promise<Response> {
       });
     }
     const messages = await request.json();
-    const completion = await openAI.createChatCompletion({
+    const xraw = request.headers.get("x-openai-options");
+    let xoptions = {
       model: "gpt-3.5-turbo-0301",
-      messages,
       temperature: 0.9,
       max_tokens: 2048,
       top_p: 1,
+      stream: false,
       frequency_penalty: 0.0,
       presence_penalty: 0.6,
+      ...(() => {
+        try {
+          return xraw ? JSON.parse(xraw) || {} : {};
+        } catch (_) {
+          return {};
+        }
+      })(),
+    };
+    if (request.url.includes("?")) {
+      const q = new URL(request.url).searchParams;
+      if (q.has("stream")) {
+        xoptions.stream = true;
+      }
+    }
+    const completion = await openAI.createChatCompletion({
+      messages,
+      ...xoptions,
     });
+    if (xoptions.stream) {
+      return new Response(completion.readable);
+    }
     return new Response(JSON.stringify(completion), {
       headers: {
         "content-type": "application/json; charset=UTF-8",
