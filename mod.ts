@@ -24,8 +24,10 @@ async function handler(request: Request): Promise<Response> {
       });
     }
     const messages = await request.json();
-    const xraw = request.headers.get("x-openai-options");
-    let xoptions = {
+    const { headers } = request;
+    const xraw = headers.get("x-openai-args");
+    let xai = {
+      messages,
       model: "gpt-3.5-turbo-0301",
       temperature: 0.9,
       max_tokens: 2048,
@@ -35,7 +37,9 @@ async function handler(request: Request): Promise<Response> {
       presence_penalty: 0.6,
       ...(() => {
         try {
-          return xraw ? JSON.parse(xraw) || {} : {};
+          return Object.fromEntries(
+            new URL(`about:blank?${atob(xraw || "")}`).searchParams,
+          );
         } catch (_) {
           return {};
         }
@@ -44,14 +48,15 @@ async function handler(request: Request): Promise<Response> {
     if (request.url.includes("?")) {
       const q = new URL(request.url).searchParams;
       if (q.has("stream")) {
-        xoptions.stream = true;
+        xai.stream = true;
       }
     }
-    const completion = await openAI.createChatCompletion({
-      messages,
-      ...xoptions,
-    });
-    if (xoptions.stream) {
+    const key = headers.get("x-openai-key");
+    const completion = await (key ? new OpenAI(key) : openAI)
+      .createChatCompletion({
+        ...xai,
+      });
+    if (xai.stream) {
       const headers = new Headers(completion.headers);
       headers.set("Content-Type", "application/octet-stream");
 
