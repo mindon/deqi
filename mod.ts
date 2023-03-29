@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.122.0/http/server.ts";
-import { OpenAI } from "https://deno.land/x/openai/mod.ts";
+import { OpenAI } from "https://raw.githubusercontent.com/mindon/openai/master/mod.ts";
 
 const openAI = new OpenAI(Deno.env.get("OPENAI_API_KEY")!);
 
