@@ -52,7 +52,14 @@ async function handler(request: Request): Promise<Response> {
       ...xoptions,
     });
     if (xoptions.stream) {
-      return new Response(completion.readable);
+      const headers = new Headers(completion.headers);
+      headers.set("Content-Type", "application/octet-stream");
+
+      return new Response(completion.body, {
+        status: completion.status,
+        statusText: completion.statusText,
+        headers,
+      });
     }
     return new Response(JSON.stringify(completion), {
       headers: {
