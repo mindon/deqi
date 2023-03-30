@@ -3,8 +3,11 @@ const dots = '❞';
 
 // for openai playground
 async function chat(cl, cb, streaming = false) {
+  const headers = [["Content-Type", "application/json"]];
+  const ik = localStorage.getItem('ik');
+  if (ik && ik.length > 8) headers.push(['x-openai-key', ik]);
   const resp = await fetch(`/chat${streaming ? '?stream' : ''}`, {method: 'POST', mode: 'cors',
-    headers: [["Content-Type", "application/json"]], body: JSON.stringify(cl)});
+    headers, body: JSON.stringify(cl)});
 
   if (!streaming) {
     const d = await resp.json();
@@ -386,6 +389,16 @@ function copix(msg, cb) {
 window.copix = copix;
 
 // -----
+function xready(flag = true) {
+  if (flag) {
+    q$('#myempty').removeAttribute('disabled');
+    q$('#myexport').removeAttribute('disabled');
+    return;
+  }
+  q$('#myempty').setAttribute('disabled', true);
+  q$('#myexport').setAttribute('disabled', true);
+}
+
 document.addEventListener('qi-changed', () => {
   const data = [];
   q$$('qi-chat', (q) => {
@@ -395,11 +408,11 @@ document.addEventListener('qi-changed', () => {
   });
   if (data.length > 0) {
     localStorage.setItem('ai', JSON.stringify(data));
+    xready();
   }
 });
 
-const raw = localStorage.getItem('ai');
-if (raw) {
+function load(raw) {
   try {
     const data = JSON.parse(raw);
     if (data && data.length > 0) {
@@ -411,10 +424,19 @@ if (raw) {
         c.streaming = true;
         qi.parentElement.insertBefore(c, qi);
       });
+      xready();
+      return true;
     }
   } catch(err) {
     console.error(err);
   }
+  return false;
+}
+const raw = localStorage.getItem('ai');
+if (raw) {
+  load(raw);
+} else {
+  q$('#myempty').setAttribute("disabled", true);
 }
 
 q$('#newchat').addEventListener('click', (evt) => {
@@ -430,10 +452,65 @@ q$('#newchat').addEventListener('click', (evt) => {
   last.focus();
 });
 
-function todo() {
-  alert('TODO');
-}
-q$('#mykey').onclick = todo;
-q$('#myimport').onclick = todo;
-q$('#myexport').onclick = todo;
+q$('#mykey').onclick = (evt) => {
+  const key = prompt(`使用自己的OpenAI Key
+【注意】本站不存储，风险自负`);
+  if (!key) return;
+  if (key === 'CLEAR') {
+    localStorage.removeItem('ik');
+    evt.target.classList.remove('alarm');
+    return;
+  }
+  localStorage.setItem('ik', key.trim());
+  evt.target.classList.add('alarm');
+};
 
+if (localStorage.getItem('ik')) {
+  q$('#mykey').classList.add('alarm');
+}
+
+q$('#myempty').onclick = () => {
+  if (!localStorage.getItem('ai') || !confirm('确认要清除所有记录？')) return;
+  q$$('qi-chat', (t) => {
+    t.parentElement.removeChild(t);
+  });
+  localStorage.removeItem('ai');
+  xready(false);
+};
+
+q$('#myimport').onclick = () => {
+  q$('#myfile').click();
+};
+
+const a = document.createElement('a');
+q$('#myexport').onclick = () => {
+  const raw = localStorage.getItem('ai');
+  if (!raw) {
+    alert('没有记录数据');
+    return;
+  }
+  const now = new Date();
+  a.download = `deqi-ai-chat_${[now.getFullYear(),
+    `0${now.getMonth() +1}`.slice(-2),
+    `0${now.getDate()}`.slice(-2)].join('')}.json`;
+  a.href = `data:text/plain;base64,${btoa(
+    unescape(encodeURIComponent(raw))
+  )}`;
+  a.click();
+};
+
+q$('#myfile').onchange = (evt) => {
+    const files = evt.target.files;
+    if (!window.FileReader || !files || files.length == 0) {
+      return;
+    }
+
+    const r = new FileReader();
+    r.onload = (evt) => {
+      const data = evt.target.result;
+      if (load(data)) {
+        localStorage.setItem('ai', data);
+      }
+    };
+    r.readAsText(files[0]);
+};
