@@ -421,7 +421,8 @@ q$('#newchat').addEventListener('click', (evt) => {
   if (!last || (last.notes && last.notes.length > 0)) {
     const c = document.createElement('qi-chat');
     c.streaming = true;
-    evt.parentElement.insertBefore(c, evt.target);
+    const p = evt.target.parentElement;
+    p.parentElement.insertBefore(c, p);
     last = c;
   }
   last.focus();
