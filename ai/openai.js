@@ -401,7 +401,7 @@ if (raw) {
   try {
     const data = JSON.parse(raw);
     if (data && data.length > 0) {
-      const qi = q$('qi-chat');
+      const s = q$('#ia');
       data.forEach(d  => {
         const c = document.createElement('qi-chat');
         c.className = 'fin';
@@ -421,8 +421,8 @@ q$('#newchat').addEventListener('click', (evt) => {
   if (!last || (last.notes && last.notes.length > 0)) {
     const c = document.createElement('qi-chat');
     c.streaming = true;
-    const p = evt.target.parentElement;
-    p.parentElement.insertBefore(c, p);
+    const ia = q$('#ia');
+    ia.parentElement.insertBefore(c, ia);
     last = c;
   }
   last.focus();
