@@ -30,7 +30,7 @@ async function handler(request: Request): Promise<Response> {
       messages,
       model: "gpt-3.5-turbo-0301",
       temperature: 0.9,
-      max_tokens: 2048,
+      max_tokens: 200, // 2048
       top_p: 1,
       stream: false,
       frequency_penalty: 0.0,
