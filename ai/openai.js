@@ -197,6 +197,8 @@ export class QiChat extends LitElement {
 .rl { border: thin solid #0055ff;border-radius: .25rem 0 0 .25rem; border-right-width: 0}
 .r0 { border: thin solid #0055ff; border-radius: 0; border-width: thin 0; background: #666!important}
 .rr { border: thin solid #0055ff;border-radius: 0 .25rem .25rem 0; border-left-width: 0}
+.has .rl, .has .r0, .has .rr { border-color: #5e82b5;}
+.has .btn { background: #5e82b5;}
 `;
 
   ask(something) {
@@ -295,7 +297,7 @@ export class QiChat extends LitElement {
         : html`<p>${_waitting }</p>`
       }</div>`
       : ''
-    }<div class="next">
+    }<div class="next ${imax > 0 ? 'has' : ''}">
       <input autofocus id="mysay" class="rl" type="text" @keypress=${this._enter}>
       <a class="btn rr" ?disabled=${_waitting ? true: false} role="button" @click=${this.new}>
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
