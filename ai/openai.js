@@ -211,7 +211,7 @@ export class QiChat extends LitElement {
         document.dispatchEvent(new CustomEvent('qi-changed'));
         return;
       }
-      if (_waitting == dots) {
+      if (this._waitting == dots) {
         this._waitting = c;
       } else {
         this._waitting += c;
