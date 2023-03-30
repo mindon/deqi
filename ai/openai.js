@@ -401,7 +401,7 @@ if (raw) {
   try {
     const data = JSON.parse(raw);
     if (data && data.length > 0) {
-      const s = q$('#ia');
+      const qi = q$('#ia');
       data.forEach(d  => {
         const c = document.createElement('qi-chat');
         c.className = 'fin';
