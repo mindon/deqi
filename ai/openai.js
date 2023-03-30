@@ -249,13 +249,13 @@ export class QiChat extends LitElement {
 
   focus() {
     const {renderRoot} = this;
+    const p = this.renderRoot.host.parentNode;
+    q$$('qi-chat', p, (t) => {
+      const cl = t.classList;
+      if (cl.contains('fin')) return;
+      cl.add('fin');
+    });
     if (renderRoot.host.classList.contains('fin')) {
-      const p = this.renderRoot.host.parentNode;
-      q$$('qi-chat', p, (t) => {
-        const cl = t.classList;
-        if (cl.contains('fin')) return;
-        cl.add('fin');
-      });
       renderRoot.host.classList.remove('fin');
     }
     this.input();
