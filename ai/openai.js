@@ -194,10 +194,10 @@ export class QiChat extends LitElement {
     this._waitting = dots;
 
     chat(notes, (c) => {
-      if (!c) {
-        this._waitting = '[ERR]';
-        return;
-      }
+      // if (!c) {
+      //   this._waitting = '[ERR]';
+      //   return;
+      // }
       if (!streaming) {
         this._waitting = '';
         notes.push({role: 'assistant', content: c});
@@ -394,6 +394,7 @@ if (raw) {
         const c = document.createElement('qi-chat');
         c.className = 'fin';
         c.notes = d;
+        c.streaming = true;
         qi.parentElement.insertBefore(c, qi);
       });
     }
@@ -407,6 +408,7 @@ q$('#newchat').addEventListener('click', (evt) => {
   let last = qi[qi.length -1];
   if (!last || (last.notes && last.notes.length > 0)) {
     const c = document.createElement('qi-chat');
+    c.streaming = true;
     evt.parentElement.insertBefore(c, evt.target);
     last = c;
   }
