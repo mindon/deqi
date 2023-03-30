@@ -8,7 +8,7 @@ async function chat(cl, cb, streaming = false) {
 
   if (!streaming) {
     const d = await resp.json();
-    cb(d && d.choices && d.choices.length > 0 && d.choices[0].content);
+    cb(d && d.choices && d.choices.length > 0 && d.choices[0].content, true);
     return;
   }
 
@@ -16,10 +16,14 @@ async function chat(cl, cb, streaming = false) {
   while (true) {
     const {value, done} = await reader.read();
     if (done) break;
+    let fin = false;
     cb(value.split('data: ').map(v => {
-      if (!v?.startsWith('{')) return v.trim() == _DONE ? _DONE : v;
+      if (!v?.startsWith('{')) {
+        fin = v.trim() == _DONE;
+        return fin ? '' : v;
+      }
       return JSON.parse(v.trim());
-    }).map(v => !v ? '' : typeof v === 'string' ? v : v.choices[0].delta.content || '').join(''));
+    }).map(v => !v ? '' : typeof v === 'string' ? v : v.choices[0].delta.content || '').join(''), fin);
   }
 }
 
@@ -81,8 +85,11 @@ export class QiChat extends LitElement {
   margin: 0;
   padding: 0;
   unicode-bidi: embed;
-  white-space: pre;
-  word-break: break-word;
+  white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
   max-width: 100%;
 }
 .assistant::before {
@@ -193,22 +200,18 @@ export class QiChat extends LitElement {
     this.notes = notes.slice(0);
     this._waitting = dots;
 
-    chat(notes, (c) => {
-      // if (!c) {
-      //   this._waitting = '[ERR]';
-      //   return;
-      // }
+    chat(notes, (c, fin) => {
       if (!streaming) {
         this._waitting = '';
         notes.push({role: 'assistant', content: c});
         this.notes = notes.slice(0);
         return;
       }
-      if (c === _DONE) {
+      if (fin || !c) {
         notes.push({role: 'assistant', content: this._waitting});
         this.notes = notes;
         this._waitting = '';
-        document.dispatchEvent(new CustomEvent('qi-changed'));
+        document.dispatchEvent(new CustomEvent('qi-changed', {}));
         return;
       }
       if (this._waitting == dots) {
