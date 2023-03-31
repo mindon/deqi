@@ -7,12 +7,12 @@ html, body {
   margin: 0;
   padding: 0;
   color: #fff;
+  background-color: #262626;
 }
 #stage {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #262626;
   width: 100vw;
   height: 100vh;
   scroll-snap-align: start;
@@ -45,7 +45,10 @@ li.x::marker {
 }
 #atlab {
   width: 360px; height: 360px; background: #262626; color: #fff;
-  margin: 1rem auto;
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: .8;
 }
     </style>
 <!-- Google Tag Manager -->
@@ -61,7 +64,8 @@ li.x::marker {
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRXD8X"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-    <div id="stage">
+      <div id="atlab"></div>
+      <div id="stage">
       <div class="center">
     <h1>DeQi ➜ Mindon ❞H₂O⟩</h1>
     <div>
@@ -87,7 +91,6 @@ li.x::marker {
         ...
       </i>
     </p>
-    <div id="atlab"></div>
   </div>
     </div>
   </body>
