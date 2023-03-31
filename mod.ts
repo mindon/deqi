@@ -42,7 +42,7 @@ async function handler(request: Request): Promise<Response> {
           );
           Object.keys(args).map(k => {
             const s = args[k].toString();          
-            if(/[^\d.-+]/.test(s)) {
+            if(/[^\d.+-]/.test(s)) {
               if (s.includes('.')) {
                 args[k] = parseFloat(s);
               } else {
