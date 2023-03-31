@@ -30,16 +30,27 @@ async function handler(request: Request): Promise<Response> {
       messages,
       model: "gpt-3.5-turbo-0301",
       temperature: 0.9,
-      max_tokens: 200, // 2048
+      max_tokens: 512, // 2048
       top_p: 1,
       stream: false,
       frequency_penalty: 0.0,
       presence_penalty: 0.6,
       ...(() => {
         try {
-          return Object.fromEntries(
+          const args: { [key: string]: string | number } = Object.fromEntries(
             new URL(`about:blank?${atob(xraw || "")}`).searchParams,
           );
+          Object.keys(args).map(k => {
+            const s = args[k].toString();          
+            if(/[^\d.-+]/.test(s)) {
+              if (s.includes('.')) {
+                args[k] = parseFloat(s);
+              } else {
+                args[k] = parseInt(s, 10);
+              }
+            }
+          })
+          return args;
         } catch (_) {
           return {};
         }
