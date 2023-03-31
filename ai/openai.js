@@ -228,17 +228,17 @@ export class QiChat extends LitElement {
         this.notes = notes.slice(0);
         return;
       }
-      if (fin || !c) {
+      if (this._waitting == dots) {
+        this._waitting = c;
+      } else {
+        this._waitting += c;
+      }
+      if (fin) {
         notes.push({role: 'assistant', content: this._waitting});
         this.notes = notes;
         this._waitting = '';
         document.dispatchEvent(new CustomEvent('qi-changed', {}));
         return;
-      }
-      if (this._waitting == dots) {
-        this._waitting = c;
-      } else {
-        this._waitting += c;
       }
     }, streaming);
   }
@@ -490,6 +490,7 @@ q$('#myempty').onclick = () => {
   });
   localStorage.removeItem('ai');
   xready(false);
+  q$('#newchat').click();
 };
 
 q$('#myimport').onclick = () => {
