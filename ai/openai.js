@@ -3,11 +3,16 @@ const dots = '❞';
 
 // for openai playground
 async function chat(cl, cb, streaming = false) {
+  const body = JSON.stringify(cl);
+  if (body.length > 4097) {
+    cb('[ERR] limits 4097 request body size', true);
+    return;
+  }
   const headers = [["Content-Type", "application/json"]];
   const ik = localStorage.getItem('ik');
   if (ik && ik.length > 8) headers.push(['x-openai-key', ik]);
   const resp = await fetch(`/chat${streaming ? '?stream' : ''}`, {method: 'POST', mode: 'cors',
-    headers, body: JSON.stringify(cl)});
+    headers, body});
 
   if (!streaming) {
     const d = await resp.json();
@@ -25,8 +30,12 @@ async function chat(cl, cb, streaming = false) {
         fin = v.trim() == _DONE;
         return fin ? '' : v;
       }
-      return JSON.parse(v.trim());
-    }).map(v => !v ? '' : typeof v === 'string' ? v : v.choices[0].delta.content || '').join(''), fin);
+      const z = JSON.parse(v.trim());
+      if (z.error && z.error.message) {
+        fin = true;
+      }
+      return z;
+    }).map(v => !v ? '' : typeof v === 'string' ? v : (v.error && v.error.message) || v.choices[0].delta.content || '').join(''), fin);
   }
 }
 
@@ -276,13 +285,14 @@ export class QiChat extends LitElement {
   render() {
     const {notes = [], _waitting} = this;
     const imax = notes.length;
+    const body = JSON.stringify(notes);
     return html`${
       imax > 0 
       ? notes.map((note, i) => {
       const {role, content} = note;
       return html`<div class="${role}"><p>${content}</p>${role == 'assistant'
       ? html`${
-        i == imax -1
+        i == imax -1 && body.length < 4097
         ? html`<a class="btn continue" title="继续 " @click=${() => this.focus()}>
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-quote-fill" viewBox="0 0 16 16">
   <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2V2zm7.194 2.766a1.688 1.688 0 0 0-.227-.272 1.467 1.467 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 5.734 4C4.776 4 4 4.746 4 5.667c0 .92.776 1.666 1.734 1.666.343 0 .662-.095.931-.26-.137.389-.39.804-.81 1.22a.405.405 0 0 0 .011.59c.173.16.447.155.614-.01 1.334-1.329 1.37-2.758.941-3.706a2.461 2.461 0 0 0-.227-.4zM11 7.073c-.136.389-.39.804-.81 1.22a.405.405 0 0 0 .012.59c.172.16.446.155.613-.01 1.334-1.329 1.37-2.758.942-3.706a2.466 2.466 0 0 0-.228-.4 1.686 1.686 0 0 0-.227-.273 1.466 1.466 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 10.07 4c-.957 0-1.734.746-1.734 1.667 0 .92.777 1.666 1.734 1.666.343 0 .662-.095.931-.26z"/>
