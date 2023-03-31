@@ -233,6 +233,7 @@ export class QiChat extends LitElement {
   }
 
   next() {
+    if (this._waitting) return;
     const {renderRoot} = this;
     const mysay = q$('#mysay', renderRoot);
     if (/^\s*$/.test(mysay.value)) {
