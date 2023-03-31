@@ -27,16 +27,17 @@ async function chat(cl, cb, streaming = false) {
     if (done) break;
     let fin = false;
     cb(value.split('data: ').map(v => {
-      if (!v?.startsWith('{')) {
+      if (!v) return '';
+      if (!v.startsWith('{')) {
         fin = v.trim() == _DONE;
         return fin ? '' : v;
       }
       const z = JSON.parse(v.trim());
-      if (z.error && z.error.message) {
+      if (z && z.error && z.error.message) {
         fin = true;
       }
       return z;
-    }).map(v => !v ? '' : typeof v === 'string' ? v : (v.error && v.error.message) || v.choices[0].delta.content || '').join(''), fin);
+    }).map(v => !v ? '' : (typeof v === 'string' ? v : (v.error && v.error.message) || v.choices[0].delta.content || '')).join(''), fin);
   }
 }
 
