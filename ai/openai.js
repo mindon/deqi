@@ -11,7 +11,7 @@ async function chat(cl, cb, streaming = false) {
   const headers = [["Content-Type", "application/json"]];
   const ik = localStorage.getItem('ik');
   if (ik && ik.length > 8) headers.push(['x-openai-key', ik]);
-  headers.push(['x-openai-args', btoa('max_tokens=1024')]);
+  headers.push(['x-openai-args', btoa('max_tokens=256')]);
   const resp = await fetch(`/chat${streaming ? '?stream' : ''}`, {method: 'POST', mode: 'cors',
     headers, body});
 
