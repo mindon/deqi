@@ -357,11 +357,11 @@ function fallback(msg, cb) {
     t = document.createElement("textarea");
     t.value = text;
     t.readOnly = true;
-    t.style.top = "-200px";
-    t.style.left = "0";
-    t.style.height = "100px";
-    t.style.width = "100px";
-    t.style.position = "fixed";
+    t.style.top = '0';
+    t.style.left = '0';
+    t.style.height = '1px';
+    t.style.width = '1px';
+    t.style.position = 'fixed';
 
     document.body.appendChild(t);
   } else {
@@ -387,17 +387,27 @@ function fallback(msg, cb) {
 }
 
 function copix(msg, cb) {
-  if (navigator.clipboard) {
-    navigator.permissions.query({name: "clipboard-write"}).then((result) => {
-      if (result.state === "granted" || result.state === "prompt") {
-        navigator.clipboard.writeText(msg.value || msg || "").then((d) => {
-          if (cb) cb(d);
-        }).catch(() => fallback(msg, cb));
+  const text = msg.value || msg || "";
+  try {
+    navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
+      if (result.state !== 'granted' && result.state !== 'prompt') {
+        fallback(text, cb);
+        return;
       }
+      const clipr = navigator.clipboard;
+      if (!clipr) {
+        fallback(text, cb);
+        return;
+      }
+      clipr.writeText(text).then((d) => {
+        cb && cb(d);
+      }, (err) => {
+        fallback(msg, cb);
+      });
     });
-    return;
+  } catch(err) {
+    fallback(text, cb);
   }
-  fallback(msg, cb);
 }
 window.copix = copix;
 
