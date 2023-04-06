@@ -387,28 +387,27 @@ function fallback(msg, cb) {
 }
 
 function copix(msg, cb) {
-  const text = msg.value || msg || "";
   try {
     navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
       if (result.state !== 'granted' && result.state !== 'prompt') {
-        fallback(text, cb);
+        fallback(msg, cb);
         return;
       }
       const clipr = navigator.clipboard;
       if (!clipr) {
-        fallback(text, cb);
+        fallback(msg, cb);
         return;
       }
-      clipr.writeText(text).then((d) => {
+      clipr.writeText(msg.value || msg || "").then((d) => {
         cb && cb(d);
       }, (err) => {
         fallback(msg, cb);
       });
     }).catch(err => {
-      fallback(text, cb);
+      fallback(msg, cb);
     });
   } catch(err) {
-    fallback(text, cb);
+    fallback(msg, cb);
   }
 }
 window.copix = copix;
