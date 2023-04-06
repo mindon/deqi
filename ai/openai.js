@@ -404,6 +404,8 @@ function copix(msg, cb) {
       }, (err) => {
         fallback(msg, cb);
       });
+    }).catch(err => {
+      fallback(text, cb);
     });
   } catch(err) {
     fallback(text, cb);
