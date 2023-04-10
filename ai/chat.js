@@ -1,10 +1,19 @@
+//
+import {
+  css,
+  html,
+  LitElement,
+} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
+
 const _DONE = "[DONE]";
 const dots = "❞";
 
 const MAX_SIZE = 4097;
+const PREFIX = "x-openai";
 
 const q = new URL(`about:blank${location.search}`).searchParams;
-// for openai playground
+
+// for openai api chat
 async function chat(cl, cb, streaming = false) {
   const body = JSON.stringify(cl);
   if (body.length > MAX_SIZE) {
@@ -13,14 +22,14 @@ async function chat(cl, cb, streaming = false) {
   }
   const headers = [["Content-Type", "application/json"]];
   const ik = localStorage.getItem("ik");
-  if (ik && ik.length > 8) headers.push(["x-openai-key", ik]);
+  if (ik && ik.length > 8) headers.push([`${PREFIX}-key`, ik]);
   if (q.has("vip")) {
     const vip = q.get("vip");
-    if (vip) headers.push(["x-openai-vip", vip]);
+    if (vip) headers.push([`${PREFIX}-vip`, vip]);
     q.delete("vip");
   }
   const qs = q.toString();
-  if (qs) headers.push(["x-openai-args", btoa(qs)]);
+  if (qs) headers.push([`${PREFIX}-args`, btoa(qs)]);
   const resp = await fetch(`/chat${streaming ? "?stream" : ""}`, {
     method: "POST",
     mode: "cors",
@@ -63,12 +72,7 @@ async function chat(cl, cb, streaming = false) {
   }
 }
 
-import {
-  css,
-  html,
-  LitElement,
-} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
-
+// QiChat Component for one topic
 export class QiChat extends LitElement {
   static properties = {
     notes: { type: Array },
@@ -79,8 +83,21 @@ export class QiChat extends LitElement {
 :host {
   display: block;
   font-size: 1rem;
-  padding-top: .5rem;
-  padding-bottom: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  max-width: 100%;
+  border-top: thin dashed #ddd;
+  position: relative;
+}
+:host::before {
+  content: 'chat❝';
+  position: absolute;
+  top: -.5rem;
+  left: 0;
+  background: #fff;
+  zoom: .7;
+  padding-right: 1rem;
+  color: #ccc;
 }
 :host(.fin) .next {
   display: none;
@@ -100,7 +117,7 @@ export class QiChat extends LitElement {
 }
 
 .user {
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  box-shadow: 0 -.125rem 1rem rgba(159, 176, 205, .35);
   margin-bottom: .5rem;
   text-align: right;
   padding-right: 3.2rem;
@@ -108,21 +125,21 @@ export class QiChat extends LitElement {
 .user::after {
   width: 20px;
   height: 20px;
-  content: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22%23174ea6%22%20class%3D%22bi%20bi-chat-right-text-fill%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M16%202a2%202%200%200%200-2-2H2a2%202%200%200%200-2%202v8a2%202%200%200%200%202%202h9.586a1%201%200%200%201%20.707.293l2.853%202.853a.5.5%200%200%200%20.854-.353V2zM3.5%203h9a.5.5%200%200%201%200%201h-9a.5.5%200%200%201%200-1zm0%202.5h9a.5.5%200%200%201%200%201h-9a.5.5%200%200%201%200-1zm0%202.5h5a.5.5%200%200%201%200%201h-5a.5.5%200%200%201%200-1z%22/%3E%0A%3C/svg%3E);
+  content: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22%2376a0df%22%20class%3D%22bi%20bi-chat-right-text-fill%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M16%202a2%202%200%200%200-2-2H2a2%202%200%200%200-2%202v8a2%202%200%200%200%202%202h9.586a1%201%200%200%201%20.707.293l2.853%202.853a.5.5%200%200%200%20.854-.353V2zM3.5%203h9a.5.5%200%200%201%200%201h-9a.5.5%200%200%201%200-1zm0%202.5h9a.5.5%200%200%201%200%201h-9a.5.5%200%200%201%200-1zm0%202.5h5a.5.5%200%200%201%200%201h-5a.5.5%200%200%201%200-1z%22/%3E%0A%3C/svg%3E);
   position: absolute;
   right: 1rem;
   top: 1.2em;
   z-index: 0;
 }
 .assistant {
-  box-shadow: 0 .5rem .5rem rgba(0,0,0,.15);
+  box-shadow: 0 .25rem .5rem rgba(0,0,0,.15);
   background: #d1ecff;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 2rem;
 }
 .user > p,
 .assistant > p {
-  text-indent: 2.4rem;
+  text-indent: 2rem;
   margin: 0;
   padding: 0;
   unicode-bidi: embed;
@@ -187,6 +204,9 @@ a * {
   bottom: 1rem;
   z-index: 1;
 }
+.trash.r2 {
+  right: 5.5rem;
+}
 .copix::before {
   width: 16px;
   height: 16px;
@@ -242,12 +262,16 @@ a * {
 .btn:not(:disabled):active { box-shadow: var(--a) 0 4px 4px 0, var(--b) 0 8px 12px 6px;}
 .btn:disabled { box-shadow: var(--a) 0 1px 3px 0, var(--b) 0 4px 8px 3px;pointer-events:none;cursor:default}
 
-
+.next {
+  max-width: 64rem;
+  margin: 0 auto;
+}
 .next .btn { box-shadow: none; background: #008a0e; color: #fff;}
 .next .btn[disabled] {background: #ccc!important;pointer-events:none}
 .rl { border: thin solid #008a0e;border-radius: .25rem 0 0 .25rem; border-right-width: 0}
 .r0 { border: thin solid #008a0e; border-radius: 0; border-width: thin 0; background: #666!important}
 .rr { border: thin solid #008a0e;border-radius: 0 .25rem .25rem 0; border-left-width: 0}
+.has { margin-bottom: 1.5rem; }
 .has .rl, .has .r0, .has .rr { border-color: #5e82b5;}
 .has .btn { background: #5e82b5;}
 `;
@@ -322,10 +346,17 @@ a * {
   }
 
   _delete(evt) {
+    if (!confirm("删除此记录？")) {
+      return;
+    }
     const { i } = evt.target.dataset;
-    console.log(evt.target, i);
     this.notes.splice(parseInt(i, 10) - 1, 2);
-    this.requestUpdate();
+    if (this.notes.length > 0) {
+      this.requestUpdate();
+    } else {
+      const p = this.renderRoot.host.parentNode;
+      p.removeChild(this.renderRoot.host);
+    }
     document.dispatchEvent(new CustomEvent("qi-changed", {}));
   }
 
@@ -337,10 +368,11 @@ a * {
       imax > 0
         ? notes.map((note, i) => {
           const { role, content } = note;
+          const cc = i == imax - 1 && body.length < MAX_SIZE;
           return html`<div class="${role}"><p>${content}</p>${
             role == "assistant"
               ? html`${
-                i == imax - 1 && body.length < MAX_SIZE
+                  cc
                   ? html`<a class="btn continue" title="继续 " @click=${() =>
                     this.focus()}>
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-quote-fill" viewBox="0 0 16 16">
@@ -350,7 +382,7 @@ a * {
                   : ""
               }<a class="btn copix" title="拷贝" @click=${() => {
                 copix(content);
-              }}></a><a class="btn trash" title="删除" data-i="${i}" @click=${this._delete}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash3" viewBox="0 0 16 16">
+              }}></a><a class="btn trash ${!cc ? 'r2': ''}" title="删除" data-i="${i}" @click=${this._delete}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash3" viewBox="0 0 16 16">
   <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
 </svg></a>`
               : ""
@@ -367,7 +399,7 @@ a * {
         : ""
     }<div class="next ${imax > 0 ? "has" : ""}">
       <input autofocus id="mysay" class="rl" @keypress=${this._enter} placeholder="${
-      imax > 0 ? `保留上下文，限${MAX_SIZE}字符，继续聊` : ""
+      imax > 0 ? `续聊模式，限${MAX_SIZE}字符` : ""
     }">
       <a class="btn rr" ?disabled=${
       _waitting ? true : false
@@ -380,7 +412,9 @@ a * {
   }
 }
 customElements.define("qi-chat", QiChat);
+// end of QiChat
 
+// ------ helpers
 function q$(id, doc, clickFn) {
   if (doc instanceof Function) {
     clickFn = doc;
@@ -405,6 +439,7 @@ function q$$(id, doc, cb) {
 }
 window.q$$ = q$$;
 
+// copy fallback
 function fallback(msg, cb) {
   let t;
   let text = msg;
@@ -442,6 +477,7 @@ function fallback(msg, cb) {
   }, 50);
 }
 
+// copy text
 function copix(msg, cb) {
   try {
     navigator.permissions.query({ name: "clipboard-write" }).then((result) => {
@@ -492,6 +528,7 @@ document.addEventListener("qi-changed", () => {
   }
 });
 
+// load logs
 function load(raw) {
   try {
     const data = JSON.parse(raw);
@@ -519,6 +556,7 @@ if (raw) {
   xready(false);
 }
 
+// new chat
 q$("#newchat").addEventListener("click", (evt) => {
   const qi = q$$("qi-chat");
   let last = qi[qi.length - 1];
@@ -533,9 +571,10 @@ q$("#newchat").addEventListener("click", (evt) => {
 });
 q$("#newchat").click();
 
+// local customized key
 q$("#mykey").onclick = (evt) => {
   const key = prompt(`使用自己的OpenAI Key
-【注意】本站不存储，风险自负`);
+【注意】本站不存储，风险自负。（建议存服务器）`);
   if (!key) return;
   if (key === "CLEAR") {
     localStorage.removeItem("ik");
@@ -550,6 +589,7 @@ if (localStorage.getItem("ik")) {
   q$("#mykey").classList.add("alarm");
 }
 
+// clear logs
 q$("#myempty").onclick = () => {
   if (!localStorage.getItem("ai") || !confirm("确认要清除所有记录？")) return;
   q$$("qi-chat", (t) => {
@@ -560,10 +600,28 @@ q$("#myempty").onclick = () => {
   q$("#newchat").click();
 };
 
+// import logs
+q$("#myfile").onchange = (evt) => {
+  const files = evt.target.files;
+  if (!window.FileReader || !files || files.length == 0) {
+    return;
+  }
+
+  const r = new FileReader();
+  r.onload = (evt) => {
+    const data = evt.target.result;
+    if (load(data)) {
+      localStorage.setItem("ai", data);
+    }
+  };
+  r.readAsText(files[0]);
+};
+
 q$("#myimport").onclick = () => {
   q$("#myfile").click();
 };
 
+// export logs
 const a = document.createElement("a");
 q$("#myexport").onclick = () => {
   const raw = localStorage.getItem("ai");
@@ -585,20 +643,4 @@ q$("#myexport").onclick = () => {
     )
   }`;
   a.click();
-};
-
-q$("#myfile").onchange = (evt) => {
-  const files = evt.target.files;
-  if (!window.FileReader || !files || files.length == 0) {
-    return;
-  }
-
-  const r = new FileReader();
-  r.onload = (evt) => {
-    const data = evt.target.result;
-    if (load(data)) {
-      localStorage.setItem("ai", data);
-    }
-  };
-  r.readAsText(files[0]);
 };
