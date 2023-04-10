@@ -66,12 +66,17 @@ async function handler(request: Request): Promise<Response> {
         xai.stream = true;
       }
     }
+    let vip = '';
 
     const ai = ((): OpenAI => {
       let key = "";
-      const vip = headers.get("x-openai-vip");
+      vip = headers.get("x-openai-vip") || '';
       if (vip && /^\w{1,8}$/.test(vip)) {
-        key = Deno.env.get(`OPENAI_API_${vip?.toUpperCase()}`);
+        vip = vip.toUpperCase();
+        key = Deno.env.get(`OPENAI_API_${vip}`);
+        if (!key) {
+          vip = '';
+        }
       }
       let xkey = headers.get("x-openai-key");
       if (xkey) {
@@ -94,6 +99,7 @@ async function handler(request: Request): Promise<Response> {
     if (xai.stream) {
       const headers = new Headers(completion.headers);
       headers.set("Content-Type", "application/octet-stream");
+      headers.set("x-openai-vip", vip);
 
       return new Response(completion.body, {
         status: completion.status,
@@ -104,6 +110,7 @@ async function handler(request: Request): Promise<Response> {
     return new Response(JSON.stringify(completion), {
       headers: {
         "content-type": "application/json; charset=UTF-8",
+        "x-openai-vip": vip,
       },
     });
   }
