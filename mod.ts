@@ -35,11 +35,12 @@ async function handler(request: Request): Promise<Response> {
         Object.keys(args).map((k) => {
           const s = args[k].toString();
           if (/[^\d.+-]/.test(s)) {
-            if (s.includes(".")) {
-              args[k] = parseFloat(s);
-            } else {
-              args[k] = parseInt(s, 10);
-            }
+            return;
+          }
+          if (s.includes(".")) {
+            args[k] = parseFloat(s);
+          } else {
+            args[k] = parseInt(s, 10);
           }
         });
         return args;
@@ -48,7 +49,7 @@ async function handler(request: Request): Promise<Response> {
       }
     })();
 
-    let xai = {
+    const xai = {
       messages,
       model: "gpt-3.5-turbo-0301",
       temperature: 0.9,
