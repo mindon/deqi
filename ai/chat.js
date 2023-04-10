@@ -542,9 +542,7 @@ document.addEventListener("qi-changed", () => {
     }
   });
   localStorage.setItem("ai", JSON.stringify(data));
-  if (data.length > 0) {
-    xready();
-  }
+  xready(data.length > 0);
 });
 
 // load logs
