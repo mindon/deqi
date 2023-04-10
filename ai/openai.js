@@ -325,6 +325,7 @@ a * {
     const { i } = evt.target.dataset;
     console.log(evt.target, i);
     this.notes.splice(parseInt(i, 10) - 1, 2);
+    this.requestUpdate();
     document.dispatchEvent(new CustomEvent("qi-changed", {}));
   }
 
