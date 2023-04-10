@@ -17,7 +17,7 @@ const q = new URL(`about:blank${location.search}`).searchParams;
 async function chat(cl, cb, streaming = false) {
   const body = JSON.stringify(cl);
   if (body.length > MAX_SIZE) {
-    cb(`[ERR] limits ${MAX_SIZE} request body size`, true);
+    cb(`limits ${MAX_SIZE} request body size`, -1);
     return;
   }
   const headers = [["Content-Type", "application/json"]];
@@ -57,7 +57,7 @@ async function chat(cl, cb, streaming = false) {
         }
         const z = JSON.parse(v.trim());
         if (z && z.error && z.error.message) {
-          fin = true;
+          fin = -2;
         }
         return z;
       }).map((v) =>
@@ -136,6 +136,9 @@ export class QiChat extends LitElement {
   background: #d1ecff;
   margin-bottom: 1.25rem;
   padding-bottom: 2rem;
+}
+.assistant.err {
+  color: #a00;
 }
 .user > p,
 .assistant > p {
@@ -284,10 +287,16 @@ a * {
     this._waitting = dots;
 
     chat(notes, (c, fin) => {
+      const failed = typeof fin === "number" && fin < 0;
+      if (failed) {
+        this.renderRoot.host.classList.add("fin");
+        c = `[ERR] ${c}`;
+      }
+      const role = `assistant${failed ? " err" : ""}`;
       if (!streaming) {
-        this._waitting = "";
-        notes.push({ role: "assistant", content: c });
+        notes.push({ role, content: c });
         this.notes = notes.slice(0);
+        this._waitting = "";
         return;
       }
       if (this._waitting == dots) {
@@ -296,10 +305,12 @@ a * {
         this._waitting += c;
       }
       if (fin) {
-        notes.push({ role: "assistant", content: this._waitting });
+        notes.push({ role, content: this._waitting });
         this.notes = notes;
         this._waitting = "";
-        document.dispatchEvent(new CustomEvent("qi-changed", {}));
+        document.dispatchEvent(
+          new CustomEvent(`qi-${failed ? "new" : "changed"}`, {}),
+        );
         return;
       }
     }, streaming);
@@ -328,7 +339,7 @@ a * {
 
   focus() {
     const { renderRoot } = this;
-    const p = this.renderRoot.host.parentNode;
+    const p = this.renderRoot.host.parentElement;
     q$$("qi-chat", p, (t) => {
       const cl = t.classList;
       if (cl.contains("fin")) return;
@@ -347,18 +358,22 @@ a * {
   }
 
   _delete(evt) {
-    if (!confirm("删除此记录？")) {
+    const t = evt.target;
+    const failed = t.parentElement.classList.contains("err");
+    if (!failed && !confirm("删除此记录？")) {
       return;
     }
-    const { i } = evt.target.dataset;
+    const { i } = t.dataset;
     this.notes.splice(parseInt(i, 10) - 1, 2);
     if (this.notes.length > 0) {
       this.requestUpdate();
     } else {
-      const p = this.renderRoot.host.parentNode;
+      const p = this.renderRoot.host.parentElement;
       p.removeChild(this.renderRoot.host);
     }
-    document.dispatchEvent(new CustomEvent("qi-changed", {}));
+    if (!failed) {
+      document.dispatchEvent(new CustomEvent("qi-changed", {}));
+    }
   }
 
   render() {
@@ -369,11 +384,12 @@ a * {
       imax > 0
         ? notes.map((note, i) => {
           const { role, content } = note;
-          const cc = i == imax - 1 && body.length < MAX_SIZE;
+          const cc = i == imax - 1 && body.length < MAX_SIZE &&
+            !role.includes("err");
           return html`<div class="${role}"><p>${content}</p>${
-            role == "assistant"
+            role.includes("assistant")
               ? html`${
-                  cc
+                cc
                   ? html`<a class="btn continue" title="继续 " @click=${() =>
                     this.focus()}>
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-quote-fill" viewBox="0 0 16 16">
@@ -383,7 +399,9 @@ a * {
                   : ""
               }<a class="btn copix" title="拷贝" @click=${() => {
                 copix(content);
-              }}></a><a class="btn trash ${!cc ? 'r2': ''}" title="删除" data-i="${i}" @click=${this._delete}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash3" viewBox="0 0 16 16">
+              }}></a><a class="btn trash ${
+                !cc ? "r2" : ""
+              }" title="删除" data-i="${i}" @click=${this._delete}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash3" viewBox="0 0 16 16">
   <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
 </svg></a>`
               : ""
@@ -571,6 +589,10 @@ q$("#newchat").addEventListener("click", (evt) => {
   last.focus();
 });
 q$("#newchat").click();
+
+document.addEventListener("qi-new", () => {
+  q$("#newchat").click();
+});
 
 // local customized key
 q$("#mykey").onclick = (evt) => {
