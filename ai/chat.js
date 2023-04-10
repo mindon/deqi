@@ -184,6 +184,7 @@ a * {
   line-height: 1.2em;
   outline: none;
   text-align: center;
+  min-width: 75%;
 }
 .copix {
   padding: 1rem!important;
