@@ -8,7 +8,7 @@ import {
 const _DONE = "[DONE]";
 const dots = "❞";
 
-const MAX_SIZE = 4097;
+const MAX_SIZE = 4096;
 const PREFIX = "x-openai";
 
 const q = new URL(`about:blank${location.search}`).searchParams;
