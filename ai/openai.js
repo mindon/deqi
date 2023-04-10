@@ -1,19 +1,32 @@
-const _DONE = '[DONE]';
-const dots = '❞';
+const _DONE = "[DONE]";
+const dots = "❞";
 
+const MAX_SIZE = 4097;
+
+const q = new URL(`about:blank${location.search}`).searchParams;
 // for openai playground
 async function chat(cl, cb, streaming = false) {
   const body = JSON.stringify(cl);
-  if (body.length > 4097) {
-    cb('[ERR] limits 4097 request body size', true);
+  if (body.length > MAX_SIZE) {
+    cb(`[ERR] limits ${MAX_SIZE} request body size`, true);
     return;
   }
   const headers = [["Content-Type", "application/json"]];
-  const ik = localStorage.getItem('ik');
-  if (ik && ik.length > 8) headers.push(['x-openai-key', ik]);
-  headers.push(['x-openai-args', btoa('max_tokens=256')]);
-  const resp = await fetch(`/chat${streaming ? '?stream' : ''}`, {method: 'POST', mode: 'cors',
-    headers, body});
+  const ik = localStorage.getItem("ik");
+  if (ik && ik.length > 8) headers.push(["x-openai-key", ik]);
+  if (q.has("vip")) {
+    const vip = q.get("vip");
+    if (vip) headers.push(["x-openai-vip", vip]);
+    q.delete("vip");
+  }
+  const qs = q.toString();
+  if (qs) headers.push(["x-openai-args", btoa(qs)]);
+  const resp = await fetch(`/chat${streaming ? "?stream" : ""}`, {
+    method: "POST",
+    mode: "cors",
+    headers,
+    body,
+  });
 
   if (!streaming) {
     const d = await resp.json();
@@ -23,31 +36,44 @@ async function chat(cl, cb, streaming = false) {
 
   const reader = resp.body.pipeThrough(new TextDecoderStream()).getReader();
   while (true) {
-    const {value, done} = await reader.read();
+    const { value, done } = await reader.read();
     if (done) break;
     let fin = false;
-    cb(value.split('data: ').map(v => {
-      if (!v) return '';
-      if (!v.startsWith('{')) {
-        fin = v.trim() == _DONE;
-        return fin ? '' : v;
-      }
-      const z = JSON.parse(v.trim());
-      if (z && z.error && z.error.message) {
-        fin = true;
-      }
-      return z;
-    }).map(v => !v ? '' : (typeof v === 'string' ? v : (v.error && v.error.message) || v.choices[0].delta.content || '')).join(''), fin);
+    cb(
+      value.split("data: ").map((v) => {
+        if (!v) return "";
+        if (!v.startsWith("{")) {
+          fin = v.trim() == _DONE;
+          return fin ? "" : v;
+        }
+        const z = JSON.parse(v.trim());
+        if (z && z.error && z.error.message) {
+          fin = true;
+        }
+        return z;
+      }).map((v) =>
+        !v
+          ? ""
+          : (typeof v === "string"
+            ? v
+            : (v.error && v.error.message) || v.choices[0].delta.content || "")
+      ).join(""),
+      fin,
+    );
   }
 }
 
-import { css, html, LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
+import {
+  css,
+  html,
+  LitElement,
+} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
 
 export class QiChat extends LitElement {
   static properties = {
-    notes: {type: Array},
-    streaming: {type: Boolean},
-    _waitting: {type: String},
+    notes: { type: Array },
+    streaming: { type: Boolean },
+    _waitting: { type: String },
   };
   static styles = css`
 :host {
@@ -112,9 +138,9 @@ export class QiChat extends LitElement {
 }
 
 .assistant::before {
-  width: 24px;
-  height: 24px;
-  content: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23f66%22%20viewBox%3D%220%200%2032%2032%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22m29.7%2013.1c.4-1.1.5-2.2.4-3.3s-.5-2.2-1-3.2c-.9-1.5-2.2-2.7-3.7-3.4-1.6-.7-3.3-.9-5-.5-.8-.8-1.7-1.5-2.7-2s-2.2-.7-3.3-.7c-1.7%200-3.4.5-4.8%201.5s-2.4%202.4-2.9%204c-1.2.3-2.2.8-3.2%201.4-.9.7-1.6%201.6-2.2%202.5-.9%201.5-1.2%203.2-1%204.9s.9%203.3%202%204.6c-.4%201.1-.5%202.2-.4%203.3s.5%202.2%201%203.2c.9%201.5%202.2%202.7%203.7%203.4%201.6.7%203.3.9%205%20.5.8.8%201.7%201.5%202.7%202s2.2.7%203.3.7c1.7%200%203.4-.5%204.8-1.5s2.4-2.4%202.9-4c1.1-.2%202.2-.7%203.1-1.4s1.7-1.5%202.2-2.5c.9-1.5%201.2-3.2%201-4.9s-.8-3.3-1.9-4.6zm-12%2016.8c-1.6%200-2.8-.5-3.9-1.4%200%200%20.1-.1.2-.1l6.4-3.7c.2-.1.3-.2.4-.4s.1-.3.1-.5v-9l2.7%201.6v7.4c.1%203.5-2.7%206.1-5.9%206.1zm-12.9-5.5c-.7-1.2-1-2.6-.7-4%200%200%20.1.1.2.1l6.4%203.7c.2.1.3.1.5.1s.4%200%20.5-.1l7.8-4.5v3.1l-6.5%203.8c-1.4.8-3%201-4.5.6-1.6-.4-2.9-1.4-3.7-2.8zm-1.7-13.9c.7-1.2%201.8-2.1%203.1-2.6v.2%207.4c0%20.2%200%20.4.1.5.1.2.2.3.4.4l7.8%204.5-2.7%201.6-6.4-3.7c-1.4-.8-2.4-2.1-2.8-3.6s-.3-3.3.5-4.7zm22.1%205.1-7.8-4.5%202.7-1.6%206.4%203.7c1%20.6%201.8%201.4%202.3%202.4s.8%202.1.7%203.3c-.1%201.1-.5%202.2-1.2%203.1s-1.6%201.6-2.7%202v-7.6c0-.2%200-.4-.1-.5%200%200-.1-.2-.3-.3zm2.7-4s-.1-.1-.2-.1l-6.4-3.7c-.2-.1-.3-.1-.5-.1s-.4%200-.5.1l-7.8%204.5v-3.1l6.5-3.8c1-.6%202.1-.8%203.3-.8%201.1%200%202.2.4%203.2%201.1.9.7%201.7%201.6%202.1%202.6s.5%202.2.3%203.3zm-16.8%205.6-2.7-1.6v-7.5c0-1.1.3-2.3.9-3.2.6-1%201.5-1.7%202.5-2.2s2.2-.7%203.3-.5c1.1.1%202.2.6%203.1%201.3%200%200-.1.1-.2.1l-6.4%203.7c-.2.1-.3.2-.4.4s-.1.3-.1.5zm1.4-3.2%203.5-2%203.5%202v4l-3.5%202-3.5-2z%22/%3E%0A%20%20%3C/svg%3E);
+  width: 20px;
+  height: 20px;
+  content: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22%23f69%22%20viewBox%3D%220%200%2032%2032%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22m29.7%2013.1c.4-1.1.5-2.2.4-3.3s-.5-2.2-1-3.2c-.9-1.5-2.2-2.7-3.7-3.4-1.6-.7-3.3-.9-5-.5-.8-.8-1.7-1.5-2.7-2s-2.2-.7-3.3-.7c-1.7%200-3.4.5-4.8%201.5s-2.4%202.4-2.9%204c-1.2.3-2.2.8-3.2%201.4-.9.7-1.6%201.6-2.2%202.5-.9%201.5-1.2%203.2-1%204.9s.9%203.3%202%204.6c-.4%201.1-.5%202.2-.4%203.3s.5%202.2%201%203.2c.9%201.5%202.2%202.7%203.7%203.4%201.6.7%203.3.9%205%20.5.8.8%201.7%201.5%202.7%202s2.2.7%203.3.7c1.7%200%203.4-.5%204.8-1.5s2.4-2.4%202.9-4c1.1-.2%202.2-.7%203.1-1.4s1.7-1.5%202.2-2.5c.9-1.5%201.2-3.2%201-4.9s-.8-3.3-1.9-4.6zm-12%2016.8c-1.6%200-2.8-.5-3.9-1.4%200%200%20.1-.1.2-.1l6.4-3.7c.2-.1.3-.2.4-.4s.1-.3.1-.5v-9l2.7%201.6v7.4c.1%203.5-2.7%206.1-5.9%206.1zm-12.9-5.5c-.7-1.2-1-2.6-.7-4%200%200%20.1.1.2.1l6.4%203.7c.2.1.3.1.5.1s.4%200%20.5-.1l7.8-4.5v3.1l-6.5%203.8c-1.4.8-3%201-4.5.6-1.6-.4-2.9-1.4-3.7-2.8zm-1.7-13.9c.7-1.2%201.8-2.1%203.1-2.6v.2%207.4c0%20.2%200%20.4.1.5.1.2.2.3.4.4l7.8%204.5-2.7%201.6-6.4-3.7c-1.4-.8-2.4-2.1-2.8-3.6s-.3-3.3.5-4.7zm22.1%205.1-7.8-4.5%202.7-1.6%206.4%203.7c1%20.6%201.8%201.4%202.3%202.4s.8%202.1.7%203.3c-.1%201.1-.5%202.2-1.2%203.1s-1.6%201.6-2.7%202v-7.6c0-.2%200-.4-.1-.5%200%200-.1-.2-.3-.3zm2.7-4s-.1-.1-.2-.1l-6.4-3.7c-.2-.1-.3-.1-.5-.1s-.4%200-.5.1l-7.8%204.5v-3.1l6.5-3.8c1-.6%202.1-.8%203.3-.8%201.1%200%202.2.4%203.2%201.1.9.7%201.7%201.6%202.1%202.6s.5%202.2.3%203.3zm-16.8%205.6-2.7-1.6v-7.5c0-1.1.3-2.3.9-3.2.6-1%201.5-1.7%202.5-2.2s2.2-.7%203.3-.5c1.1.1%202.2.6%203.1%201.3%200%200-.1.1-.2.1l-6.4%203.7c-.2.1-.3.2-.4.4s-.1.3-.1.5zm1.4-3.2%203.5-2%203.5%202v4l-3.5%202-3.5-2z%22/%3E%0A%20%20%3C/svg%3E);
   position: absolute;
   left: 1rem;
   top: 1rem;
@@ -125,6 +151,9 @@ export class QiChat extends LitElement {
 }
 .assistant:hover a.btn {
   display: inline-flex;
+}
+a * {
+  pointer-events: none;
 }
 .next {
   padding: 0;
@@ -149,6 +178,15 @@ export class QiChat extends LitElement {
   z-index: 1;
   opacity: .8;
 }
+.trash {
+  padding: .5rem!important;
+  color: red;
+  opacity: .8;
+  position: absolute!important;
+  right: 9rem;
+  bottom: 1rem;
+  z-index: 1;
+}
 .copix::before {
   width: 16px;
   height: 16px;
@@ -163,7 +201,6 @@ export class QiChat extends LitElement {
   bottom: 1rem;
   z-index: 1;
 }
-
 .btn {
   align-items: center;
   appearance: none;
@@ -206,25 +243,25 @@ export class QiChat extends LitElement {
 .btn:disabled { box-shadow: var(--a) 0 1px 3px 0, var(--b) 0 4px 8px 3px;pointer-events:none;cursor:default}
 
 
-.next .btn { box-shadow: none; background: #0055ff; color: #fff;}
+.next .btn { box-shadow: none; background: #008a0e; color: #fff;}
 .next .btn[disabled] {background: #ccc!important;pointer-events:none}
-.rl { border: thin solid #0055ff;border-radius: .25rem 0 0 .25rem; border-right-width: 0}
-.r0 { border: thin solid #0055ff; border-radius: 0; border-width: thin 0; background: #666!important}
-.rr { border: thin solid #0055ff;border-radius: 0 .25rem .25rem 0; border-left-width: 0}
+.rl { border: thin solid #008a0e;border-radius: .25rem 0 0 .25rem; border-right-width: 0}
+.r0 { border: thin solid #008a0e; border-radius: 0; border-width: thin 0; background: #666!important}
+.rr { border: thin solid #008a0e;border-radius: 0 .25rem .25rem 0; border-left-width: 0}
 .has .rl, .has .r0, .has .rr { border-color: #5e82b5;}
 .has .btn { background: #5e82b5;}
 `;
 
   ask(something) {
-    const {notes = [], streaming} = this;
-    notes.push({role: 'user', content: something});
+    const { notes = [], streaming } = this;
+    notes.push({ role: "user", content: something });
     this.notes = notes.slice(0);
     this._waitting = dots;
 
     chat(notes, (c, fin) => {
       if (!streaming) {
-        this._waitting = '';
-        notes.push({role: 'assistant', content: c});
+        this._waitting = "";
+        notes.push({ role: "assistant", content: c });
         this.notes = notes.slice(0);
         return;
       }
@@ -234,10 +271,10 @@ export class QiChat extends LitElement {
         this._waitting += c;
       }
       if (fin) {
-        notes.push({role: 'assistant', content: this._waitting});
+        notes.push({ role: "assistant", content: this._waitting });
         this.notes = notes;
-        this._waitting = '';
-        document.dispatchEvent(new CustomEvent('qi-changed', {}));
+        this._waitting = "";
+        document.dispatchEvent(new CustomEvent("qi-changed", {}));
         return;
       }
     }, streaming);
@@ -245,94 +282,112 @@ export class QiChat extends LitElement {
 
   next() {
     if (this._waitting) return;
-    const {renderRoot} = this;
-    const mysay = q$('#mysay', renderRoot);
+    const { renderRoot } = this;
+    const mysay = q$("#mysay", renderRoot);
     if (/^\s*$/.test(mysay.value)) {
       mysay.focus();
       return;
     }
     this.ask(mysay.value.trim());
-    this.input('');
+    this.input("");
   }
 
   input(c) {
-    const {renderRoot} = this;
-    const mysay = q$('#mysay', renderRoot);
-    if (c || typeof c === 'string') mysay.value = c.trim();
+    const { renderRoot } = this;
+    const mysay = q$("#mysay", renderRoot);
+    if (c || typeof c === "string") mysay.value = c.trim();
     setTimeout(() => {
-      q$('#mysay', renderRoot).focus();
+      q$("#mysay", renderRoot).focus();
     }, 300);
   }
 
   focus() {
-    const {renderRoot} = this;
+    const { renderRoot } = this;
     const p = this.renderRoot.host.parentNode;
-    q$$('qi-chat', p, (t) => {
+    q$$("qi-chat", p, (t) => {
       const cl = t.classList;
-      if (cl.contains('fin')) return;
-      cl.add('fin');
+      if (cl.contains("fin")) return;
+      cl.add("fin");
     });
-    if (renderRoot.host.classList.contains('fin')) {
-      renderRoot.host.classList.remove('fin');
+    if (renderRoot.host.classList.contains("fin")) {
+      renderRoot.host.classList.remove("fin");
     }
     this.input();
   }
 
   _enter(evt) {
-    if (evt.key == 'Enter') {
+    if (evt.key == "Enter") {
       this.next();
     }
   }
 
+  _delete(evt) {
+    const { i } = evt.target.dataset;
+    console.log(evt.target, i);
+    this.notes.splice(parseInt(i, 10) - 1, 2);
+    document.dispatchEvent(new CustomEvent("qi-changed", {}));
+  }
+
   render() {
-    const {notes = [], _waitting} = this;
+    const { notes = [], _waitting } = this;
     const imax = notes.length;
     const body = JSON.stringify(notes);
     return html`${
-      imax > 0 
-      ? notes.map((note, i) => {
-      const {role, content} = note;
-      return html`<div class="${role}"><p>${content}</p>${role == 'assistant'
-      ? html`${
-        i == imax -1 && body.length < 4097
-        ? html`<a class="btn continue" title="继续 " @click=${() => this.focus()}>
+      imax > 0
+        ? notes.map((note, i) => {
+          const { role, content } = note;
+          return html`<div class="${role}"><p>${content}</p>${
+            role == "assistant"
+              ? html`${
+                i == imax - 1 && body.length < MAX_SIZE
+                  ? html`<a class="btn continue" title="继续 " @click=${() =>
+                    this.focus()}>
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-quote-fill" viewBox="0 0 16 16">
   <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2V2zm7.194 2.766a1.688 1.688 0 0 0-.227-.272 1.467 1.467 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 5.734 4C4.776 4 4 4.746 4 5.667c0 .92.776 1.666 1.734 1.666.343 0 .662-.095.931-.26-.137.389-.39.804-.81 1.22a.405.405 0 0 0 .011.59c.173.16.447.155.614-.01 1.334-1.329 1.37-2.758.941-3.706a2.461 2.461 0 0 0-.227-.4zM11 7.073c-.136.389-.39.804-.81 1.22a.405.405 0 0 0 .012.59c.172.16.446.155.613-.01 1.334-1.329 1.37-2.758.942-3.706a2.466 2.466 0 0 0-.228-.4 1.686 1.686 0 0 0-.227-.273 1.466 1.466 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 10.07 4c-.957 0-1.734.746-1.734 1.667 0 .92.777 1.666 1.734 1.666.343 0 .662-.095.931-.26z"/>
 </svg>
           </a>`
-        :''}<a class="btn copix" title="拷贝" @click=${() => {
-            copix(content);
-          }}></a>`
-      : ''}</div>`;
-    })
-      : ''}${
+                  : ""
+              }<a class="btn copix" title="拷贝" @click=${() => {
+                copix(content);
+              }}></a><a class="btn trash" title="删除" data-i="${i}" @click=${this._delete}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash3" viewBox="0 0 16 16">
+  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+</svg></a>`
+              : ""
+          }</div>`;
+        })
+        : ""
+    }${
       _waitting
-      ? html`<div class="assistant">${
-        _waitting === dots
-        ? html`<div id="dots">${_waitting}</div>`
-        : html`<p>${_waitting }</p>`
-      }</div>`
-      : ''
-    }<div class="next ${imax > 0 ? 'has' : ''}">
-      <input autofocus id="mysay" class="rl" type="text" @keypress=${this._enter}>
-      <a class="btn rr" ?disabled=${_waitting ? true: false} role="button" @click=${this.next}>
+        ? html`<div class="assistant">${
+          _waitting === dots
+            ? html`<div id="dots">${_waitting}</div>`
+            : html`<p>${_waitting}</p>`
+        }</div>`
+        : ""
+    }<div class="next ${imax > 0 ? "has" : ""}">
+      <input autofocus id="mysay" class="rl" @keypress=${this._enter} placeholder="${
+      imax > 0 ? `保留上下文，限${MAX_SIZE}字符，继续聊` : ""
+    }">
+      <a class="btn rr" ?disabled=${
+      _waitting ? true : false
+    } role="button" @click=${this.next}>
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
   <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
-</svg>
+</svg>${imax > 0 ? " 续" : ""}
       </a>
     </div>`;
   }
 }
-customElements.define('qi-chat', QiChat);
+customElements.define("qi-chat", QiChat);
 
 function q$(id, doc, clickFn) {
   if (doc instanceof Function) {
     clickFn = doc;
     doc = document;
   }
-  const t = (doc||document).querySelector(id);
+  const t = (doc || document).querySelector(id);
   if (clickFn && t) {
-    t.addEventListener('click', clickFn);
+    t.addEventListener("click", clickFn);
   }
   return t;
 }
@@ -343,8 +398,8 @@ function q$$(id, doc, cb) {
     cb = doc;
     doc = document;
   }
-  const l = (doc||document).querySelectorAll(id);
-  if (cb)  [].slice.apply(l).forEach(cb);
+  const l = (doc || document).querySelectorAll(id);
+  if (cb) [].slice.apply(l).forEach(cb);
   return l;
 }
 window.q$$ = q$$;
@@ -357,11 +412,11 @@ function fallback(msg, cb) {
     t = document.createElement("textarea");
     t.value = text;
     t.readOnly = true;
-    t.style.top = '0';
-    t.style.left = '0';
-    t.style.height = '1px';
-    t.style.width = '1px';
-    t.style.position = 'fixed';
+    t.style.top = "0";
+    t.style.left = "0";
+    t.style.height = "1px";
+    t.style.width = "1px";
+    t.style.position = "fixed";
 
     document.body.appendChild(t);
   } else {
@@ -388,8 +443,8 @@ function fallback(msg, cb) {
 
 function copix(msg, cb) {
   try {
-    navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
-      if (result.state !== 'granted' && result.state !== 'prompt') {
+    navigator.permissions.query({ name: "clipboard-write" }).then((result) => {
+      if (result.state !== "granted" && result.state !== "prompt") {
         fallback(msg, cb);
         return;
       }
@@ -403,10 +458,10 @@ function copix(msg, cb) {
       }, (err) => {
         fallback(msg, cb);
       });
-    }).catch(err => {
+    }).catch((err) => {
       fallback(msg, cb);
     });
-  } catch(err) {
+  } catch (err) {
     fallback(msg, cb);
   }
 }
@@ -415,23 +470,23 @@ window.copix = copix;
 // -----
 function xready(flag = true) {
   if (flag) {
-    q$('#myempty').removeAttribute('disabled');
-    q$('#myexport').removeAttribute('disabled');
+    q$("#myempty").removeAttribute("disabled");
+    q$("#myexport").removeAttribute("disabled");
     return;
   }
-  q$('#myempty').setAttribute('disabled', true);
-  q$('#myexport').setAttribute('disabled', true);
+  q$("#myempty").setAttribute("disabled", true);
+  q$("#myexport").setAttribute("disabled", true);
 }
 
-document.addEventListener('qi-changed', () => {
+document.addEventListener("qi-changed", () => {
   const data = [];
-  q$$('qi-chat', (q) => {
-    if (q.notes && q.notes.length >0) {
+  q$$("qi-chat", (q) => {
+    if (q.notes && q.notes.length > 0) {
       data.push(q.notes);
     }
   });
+  localStorage.setItem("ai", JSON.stringify(data));
   if (data.length > 0) {
-    localStorage.setItem('ai', JSON.stringify(data));
     xready();
   }
 });
@@ -440,10 +495,10 @@ function load(raw) {
   try {
     const data = JSON.parse(raw);
     if (data && data.length > 0) {
-      const qi = q$('#ia');
-      data.forEach(d  => {
-        const c = document.createElement('qi-chat');
-        c.className = 'fin';
+      const qi = q$("#ia");
+      data.forEach((d) => {
+        const c = document.createElement("qi-chat");
+        c.className = "fin";
         c.notes = d;
         c.streaming = true;
         qi.parentElement.insertBefore(c, qi);
@@ -451,92 +506,98 @@ function load(raw) {
       xready();
       return true;
     }
-  } catch(err) {
+  } catch (err) {
     console.error(err);
   }
   return false;
 }
-const raw = localStorage.getItem('ai');
+const raw = localStorage.getItem("ai");
 if (raw) {
   load(raw);
 } else {
   xready(false);
 }
 
-q$('#newchat').addEventListener('click', (evt) => {
-  const qi = q$$('qi-chat');
-  let last = qi[qi.length -1];
+q$("#newchat").addEventListener("click", (evt) => {
+  const qi = q$$("qi-chat");
+  let last = qi[qi.length - 1];
   if (!last || (last.notes && last.notes.length > 0)) {
-    const c = document.createElement('qi-chat');
+    const c = document.createElement("qi-chat");
     c.streaming = true;
-    const ia = q$('#ia');
+    const ia = q$("#ia");
     ia.parentElement.insertBefore(c, ia);
     last = c;
   }
   last.focus();
 });
-q$('#newchat').click();
+q$("#newchat").click();
 
-q$('#mykey').onclick = (evt) => {
+q$("#mykey").onclick = (evt) => {
   const key = prompt(`使用自己的OpenAI Key
 【注意】本站不存储，风险自负`);
   if (!key) return;
-  if (key === 'CLEAR') {
-    localStorage.removeItem('ik');
-    evt.target.classList.remove('alarm');
+  if (key === "CLEAR") {
+    localStorage.removeItem("ik");
+    evt.target.classList.remove("alarm");
     return;
   }
-  localStorage.setItem('ik', key.trim());
-  evt.target.classList.add('alarm');
+  localStorage.setItem("ik", btoa(key.trim()));
+  evt.target.classList.add("alarm");
 };
 
-if (localStorage.getItem('ik')) {
-  q$('#mykey').classList.add('alarm');
+if (localStorage.getItem("ik")) {
+  q$("#mykey").classList.add("alarm");
 }
 
-q$('#myempty').onclick = () => {
-  if (!localStorage.getItem('ai') || !confirm('确认要清除所有记录？')) return;
-  q$$('qi-chat', (t) => {
+q$("#myempty").onclick = () => {
+  if (!localStorage.getItem("ai") || !confirm("确认要清除所有记录？")) return;
+  q$$("qi-chat", (t) => {
     t.parentElement.removeChild(t);
   });
-  localStorage.removeItem('ai');
+  localStorage.removeItem("ai");
   xready(false);
-  q$('#newchat').click();
+  q$("#newchat").click();
 };
 
-q$('#myimport').onclick = () => {
-  q$('#myfile').click();
+q$("#myimport").onclick = () => {
+  q$("#myfile").click();
 };
 
-const a = document.createElement('a');
-q$('#myexport').onclick = () => {
-  const raw = localStorage.getItem('ai');
+const a = document.createElement("a");
+q$("#myexport").onclick = () => {
+  const raw = localStorage.getItem("ai");
   if (!raw) {
-    alert('没有记录数据');
+    alert("没有记录数据");
     return;
   }
   const now = new Date();
-  a.download = `deqi-ai-chat_${[now.getFullYear(),
-    `0${now.getMonth() +1}`.slice(-2),
-    `0${now.getDate()}`.slice(-2)].join('')}.json`;
-  a.href = `data:text/plain;base64,${btoa(
-    unescape(encodeURIComponent(raw))
-  )}`;
+  a.download = `deqi-ai-chat_${
+    [
+      now.getFullYear(),
+      `0${now.getMonth() + 1}`.slice(-2),
+      `0${now.getDate()}`.slice(-2),
+    ].join("")
+  }.json`;
+  a.href = `data:text/plain;base64,${
+    btoa(
+      unescape(encodeURIComponent(raw)),
+    )
+  }`;
   a.click();
 };
 
-q$('#myfile').onchange = (evt) => {
-    const files = evt.target.files;
-    if (!window.FileReader || !files || files.length == 0) {
-      return;
-    }
+q$("#myfile").onchange = (evt) => {
+  const files = evt.target.files;
+  if (!window.FileReader || !files || files.length == 0) {
+    return;
+  }
 
-    const r = new FileReader();
-    r.onload = (evt) => {
-      const data = evt.target.result;
-      if (load(data)) {
-        localStorage.setItem('ai', data);
-      }
-    };
-    r.readAsText(files[0]);
+  const r = new FileReader();
+  r.onload = (evt) => {
+    const data = evt.target.result;
+    if (load(data)) {
+      localStorage.setItem("ai", data);
+    }
+  };
+  r.readAsText(files[0]);
 };

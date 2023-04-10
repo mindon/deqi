@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.122.0/http/server.ts";
 import { OpenAI } from "https://raw.githubusercontent.com/mindon/openai/master/mod.ts";
 
 const openAI = new OpenAI(Deno.env.get("OPENAI_API_KEY")!);
+const openVIP: { [key: string]: OpenAI } = {};
 
 const mimes: { [key: string]: string } = {
   html: "text/html; charset=utf-8",
@@ -26,35 +27,37 @@ async function handler(request: Request): Promise<Response> {
     const messages = await request.json();
     const { headers } = request;
     const xraw = headers.get("x-openai-args");
+    const xargs = (() => {
+      try {
+        const args: { [key: string]: string | number } = Object.fromEntries(
+          new URL(`about:blank?${atob(xraw || "")}`).searchParams,
+        );
+        Object.keys(args).map((k) => {
+          const s = args[k].toString();
+          if (/[^\d.+-]/.test(s)) {
+            if (s.includes(".")) {
+              args[k] = parseFloat(s);
+            } else {
+              args[k] = parseInt(s, 10);
+            }
+          }
+        });
+        return args;
+      } catch (_) {
+        return {};
+      }
+    })();
+
     let xai = {
       messages,
       model: "gpt-3.5-turbo-0301",
       temperature: 0.9,
-      max_tokens: 512, // 2048
+      max_tokens: 256, // 2048
       top_p: 1,
       stream: false,
       frequency_penalty: 0.0,
       presence_penalty: 0.6,
-      ...(() => {
-        try {
-          const args: { [key: string]: string | number } = Object.fromEntries(
-            new URL(`about:blank?${atob(xraw || "")}`).searchParams,
-          );
-          Object.keys(args).map(k => {
-            const s = args[k].toString();          
-            if(/[^\d.+-]/.test(s)) {
-              if (s.includes('.')) {
-                args[k] = parseFloat(s);
-              } else {
-                args[k] = parseInt(s, 10);
-              }
-            }
-          })
-          return args;
-        } catch (_) {
-          return {};
-        }
-      })(),
+      ...xargs,
     };
     if (request.url.includes("?")) {
       const q = new URL(request.url).searchParams;
@@ -62,11 +65,31 @@ async function handler(request: Request): Promise<Response> {
         xai.stream = true;
       }
     }
-    const key = headers.get("x-openai-key");
-    const completion = await (key ? new OpenAI(key) : openAI)
-      .createChatCompletion({
-        ...xai,
-      });
+
+    const ai = ((): OpenAI => {
+      let key = "";
+      const vip = headers.get("x-openai-vip");
+      if (vip && /^\w{1,8}$/.test(vip)) {
+        key = Deno.env.get(`OPENAI_API_${vip?.toUpperCase()}`);
+      }
+      let xkey = headers.get("x-openai-key");
+      if (xkey) {
+        key = xkey;
+        try {
+          key = atob(xkey);
+        } catch (err) {
+          key = xkey;
+        }
+      }
+      if (key && key.length > 8) {
+        return new OpenAI(key);
+      }
+      return openAI;
+    })();
+
+    const completion = await ai.createChatCompletion({
+      ...xai,
+    });
     if (xai.stream) {
       const headers = new Headers(completion.headers);
       headers.set("Content-Type", "application/octet-stream");
