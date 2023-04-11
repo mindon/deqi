@@ -418,7 +418,7 @@ a * {
         : ""
     }<div class="next ${imax > 0 ? "has" : ""}">
       <input autofocus id="mysay" class="rl" @keypress=${this._enter} placeholder="${
-      imax > 0 ? `续聊模式，限${MAX_SIZE}字符` : ""
+      imax > 0 ? `续聊模式，限${MAX_SIZE - body.length}字符` : ""
     }">
       <a class="btn rr" ?disabled=${
       _waitting ? true : false
