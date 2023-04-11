@@ -10,8 +10,21 @@ const dots = "❞";
 
 const MAX_SIZE = 4096;
 const PREFIX = "x-openai";
+const doc = document;
 
 const q = new URL(`about:blank${location.search}`).searchParams;
+
+// storage
+function dataOf(name, d) {
+  if (d === undefined) {
+    return localStorage.getItem(name);
+  }
+  if (d === false) {
+    localStorage.removeItem(name);
+    return;
+  }
+  localStorage.setItem(name, d);
+}
 
 // for openai api chat
 async function chat(cl, cb, streaming = false) {
@@ -21,7 +34,7 @@ async function chat(cl, cb, streaming = false) {
     return;
   }
   const headers = [["Content-Type", "application/json"]];
-  const ik = localStorage.getItem("ik");
+  const ik = dataOf("ik");
   if (ik && ik.length > 8) headers.push([`${PREFIX}-key`, ik]);
   if (q.has("vip")) {
     const vip = q.get("vip");
@@ -90,7 +103,7 @@ export class QiChat extends LitElement {
   position: relative;
 }
 :host::before {
-  content: 'chat❝';
+  content: '❝';
   position: absolute;
   top: -.5rem;
   left: 0;
@@ -308,7 +321,7 @@ a * {
         notes.push({ role, content: this._waitting });
         this.notes = notes;
         this._waitting = "";
-        document.dispatchEvent(
+        doc.dispatchEvent(
           new CustomEvent(`qi-${failed ? "new" : "changed"}`, {}),
         );
         return;
@@ -372,7 +385,7 @@ a * {
       p.removeChild(this.renderRoot.host);
     }
     if (!failed) {
-      document.dispatchEvent(new CustomEvent("qi-changed", {}));
+      doc.dispatchEvent(new CustomEvent("qi-changed", {}));
     }
   }
 
@@ -464,7 +477,7 @@ function fallback(msg, cb) {
   let text = msg;
   const aid = !text.tagName;
   if (aid) {
-    t = document.createElement("textarea");
+    t = doc.createElement("textarea");
     t.value = text;
     t.readOnly = true;
     t.style.top = "0";
@@ -473,7 +486,7 @@ function fallback(msg, cb) {
     t.style.width = "1px";
     t.style.position = "fixed";
 
-    document.body.appendChild(t);
+    doc.body.appendChild(t);
   } else {
     t = text;
     text = t.value;
@@ -484,14 +497,14 @@ function fallback(msg, cb) {
   setTimeout(() => {
     t.focus();
     try {
-      const ret = document.execCommand("copy");
+      const ret = doc.execCommand("copy");
       if (cb) cb(ret);
     } catch (err) {
       if (cb) cb(false, err);
     }
 
     if (aid) {
-      document.body.removeChild(t);
+      doc.body.removeChild(t);
     }
   }, 50);
 }
@@ -534,14 +547,14 @@ function xready(flag = true) {
   q$("#myexport").setAttribute("disabled", true);
 }
 
-document.addEventListener("qi-changed", () => {
+doc.addEventListener("qi-changed", () => {
   const data = [];
   q$$("qi-chat", (q) => {
     if (q.notes && q.notes.length > 0) {
       data.push(q.notes);
     }
   });
-  localStorage.setItem("ai", JSON.stringify(data));
+  dataOf("ai", JSON.stringify(data));
   xready(data.length > 0);
 });
 
@@ -549,24 +562,29 @@ document.addEventListener("qi-changed", () => {
 function load(raw) {
   try {
     const data = JSON.parse(raw);
-    if (data && data.length > 0) {
-      const qi = q$("#ia");
-      data.forEach((d) => {
-        const c = document.createElement("qi-chat");
-        c.className = "fin";
-        c.notes = d;
-        c.streaming = true;
-        qi.parentElement.insertBefore(c, qi);
-      });
-      xready();
-      return true;
+    if (!data || data.length == 0) {
+      return false;
     }
+    let qi = q$("#ia");
+    const last = q$("#ia").previousElementSibling;
+    if (last && (!last.notes || last.notes.length == 0)) {
+      qi = last;
+    }
+    data.forEach((d) => {
+      const c = doc.createElement("qi-chat");
+      c.className = "fin";
+      c.notes = d;
+      c.streaming = true;
+      qi.parentElement.insertBefore(c, qi);
+    });
+    xready();
+    return true;
   } catch (err) {
     console.error(err);
   }
   return false;
 }
-const raw = localStorage.getItem("ai");
+const raw = dataOf("ai");
 if (raw) {
   load(raw);
 } else {
@@ -575,10 +593,9 @@ if (raw) {
 
 // new chat
 q$("#newchat").addEventListener("click", (evt) => {
-  const qi = q$$("qi-chat");
-  let last = qi[qi.length - 1];
+  let last = q$("#ia").previousElementSibling;
   if (!last || (last.notes && last.notes.length > 0)) {
-    const c = document.createElement("qi-chat");
+    const c = doc.createElement("qi-chat");
     c.streaming = true;
     const ia = q$("#ia");
     ia.parentElement.insertBefore(c, ia);
@@ -588,7 +605,7 @@ q$("#newchat").addEventListener("click", (evt) => {
 });
 q$("#newchat").click();
 
-document.addEventListener("qi-new", () => {
+doc.addEventListener("qi-new", () => {
   q$("#newchat").click();
 });
 
@@ -598,25 +615,26 @@ q$("#mykey").onclick = (evt) => {
 【注意】本站不存储，风险自负。（建议存服务器）`);
   if (!key) return;
   if (key === "CLEAR") {
-    localStorage.removeItem("ik");
+    dataOf("ik", false);
     evt.target.classList.remove("alarm");
     return;
   }
-  localStorage.setItem("ik", btoa(key.trim()));
+  dataOf("ik", btoa(key.trim()));
   evt.target.classList.add("alarm");
 };
 
-if (localStorage.getItem("ik")) {
+if (dataOf("ik")) {
   q$("#mykey").classList.add("alarm");
 }
 
 // clear logs
 q$("#myempty").onclick = () => {
-  if (!localStorage.getItem("ai") || !confirm("确认要清除所有记录？")) return;
+  if (!dataOf("ai") || !confirm("确认要清除所有记录？")) return;
   q$$("qi-chat", (t) => {
+    if (!t.notes || t.notes.length == 0) return;
     t.parentElement.removeChild(t);
   });
-  localStorage.removeItem("ai");
+  dataOf("ai", false);
   xready(false);
   q$("#newchat").click();
 };
@@ -632,8 +650,9 @@ q$("#myfile").onchange = (evt) => {
   r.onload = (evt) => {
     const data = evt.target.result;
     if (load(data)) {
-      localStorage.setItem("ai", data);
+      doc.dispatchEvent(new CustomEvent("qi-changed", {}));
     }
+    q$("#newchat").click();
   };
   r.readAsText(files[0]);
 };
@@ -643,9 +662,9 @@ q$("#myimport").onclick = () => {
 };
 
 // export logs
-const a = document.createElement("a");
+const a = doc.createElement("a");
 q$("#myexport").onclick = () => {
-  const raw = localStorage.getItem("ai");
+  const raw = dataOf("ai");
   if (!raw) {
     alert("没有记录数据");
     return;
@@ -658,7 +677,7 @@ q$("#myexport").onclick = () => {
       `0${now.getDate()}`.slice(-2),
     ].join("")
   }.json`;
-  a.href = `data:text/plain;base64,${
+  a.href = `data:application/json;base64,${
     btoa(
       unescape(encodeURIComponent(raw)),
     )
