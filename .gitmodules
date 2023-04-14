@@ -1,0 +1,3 @@
+[submodule "dechat"]
+	path = dechat
+	url = https://github.com/mindon/dechat

@@ -1,7 +1,8 @@
-import { serve } from "https://deno.land/std@0.122.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
 import { OpenAI } from "https://raw.githubusercontent.com/mindon/openai/master/mod.ts";
 
-const openAI = new OpenAI(Deno.env.get("OPENAI_API_KEY")!);
+const key = Deno.env.get("OPENAI_API_KEY");
+const openAI = key ? new OpenAI(key) : null;
 const openVIP: { [key: string]: OpenAI } = {};
 
 const mimes: { [key: string]: string } = {
@@ -66,16 +67,16 @@ async function handler(request: Request): Promise<Response> {
         xai.stream = true;
       }
     }
-    let vip = '';
+    let vip = "";
 
     const ai = ((): OpenAI => {
       let key = "";
-      vip = headers.get("x-openai-vip") || '';
+      vip = headers.get("x-openai-vip") || "";
       if (vip && /^\w{1,8}$/.test(vip)) {
         vip = vip.toUpperCase();
         key = Deno.env.get(`OPENAI_API_${vip}`);
         if (!key) {
-          vip = '';
+          vip = "";
         }
       }
       let xkey = headers.get("x-openai-key");
@@ -87,12 +88,18 @@ async function handler(request: Request): Promise<Response> {
           key = xkey;
         }
       }
+      if (!openAI && (!key || key && key.length <= 8)) {
+        key = Deno.env.get("OPENAI_API_KEY");
+      }
       if (key && key.length > 8) {
         return new OpenAI(key);
       }
       return openAI;
     })();
 
+    if (!ai) {
+      return new Response("OpenAI key required", { status: 401 });
+    }
     const completion = await ai.createChatCompletion({
       ...xai,
     });
