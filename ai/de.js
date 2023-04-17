@@ -92,8 +92,12 @@ win.copix = copix;
 
 export async function po$t(list, cb, { api, headers, streaming }) {
   const body = JSON.stringify(list);
+  const ctl = win.AbortController ? new AbortController() : {};
+  const signal = ctl.signal;
+
   const resp = await fetch(api, {
     method: "POST",
+    signal,
     mode: "cors",
     headers: [["Content-Type", "application/json"]].concat(
       (headers instanceof Function ? headers() : headers) || [],
@@ -127,11 +131,19 @@ export async function po$t(list, cb, { api, headers, streaming }) {
     return;
   }
 
-  const reader = resp.body.pipeThrough(new TextDecoderStream()).getReader();
+  const pipe = resp.body.pipeThrough(new TextDecoderStream());
+  const reader = pipe.getReader();
+  let canceled = false;
+  const cancel = () => {
+    ctl.abort?.();
+    canceled = true;
+    cb(['{"error":{"message":"~canceled"}}'], streaming);
+  };
   while (true) {
+    if (canceled) break;
     const { value, done } = await reader.read();
     if (done) break;
-    cb(value.split("data: "), streaming);
+    cb(value.split("data: "), streaming, cancel);
   }
 }
 win.po$t = po$t;
