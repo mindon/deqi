@@ -36,7 +36,7 @@ body {
   <script type="module" src="qi-chat.js"></script>
   <script type="module">
     const q = new URL(`about:blank${location.search}`).searchParams;
-    const vip = q.get("vip");
+    const vip = q.get("vip") || q$('html').dataset.vip;
     if (vip && /^\w{1,16}$/.test(vip)) {
       q$('#myvip').innerText = `${vip.toUpperCase()}`;
       q$('.footer strong').innerText = `-- ${vip.toUpperCase()} --`;
