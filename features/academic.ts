@@ -1,4 +1,4 @@
-const kv = await Deno.openKv("/Users/mindon//qlab/2024/academic_20240221.kv");
+const kv = await Deno.openKv();
 
 const spaces = /^\s+|\s+$/g;
 const mailbox =
