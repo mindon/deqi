@@ -3,6 +3,8 @@ import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
 
+const enrollKey = Deno.env.get("ACADEMIC_ENROLL");
+
 const mimes: { [key: string]: string } = {
   html: "text/html; charset=utf-8",
   css: "text/css",
@@ -24,6 +26,22 @@ async function handler(request: Request): Promise<Response> {
   }
   if (pathname == "/academic") {
     if (request.method == "PUT") {
+      const { headers } = request;
+      const x = headers.get("x-academic-enroll");
+      if (enrollKey && x == enrollKey) {
+        const {email, desc} = await request.json();
+        if (email && desc && email?.length < 128) {
+          if (
+            await enroll(
+              email.replace(/\s+/g, "").toLowerCase(),
+              desc.replace(/^\s+|\s+$/g, ""),
+            )
+          ) {
+            return new Response(desc);
+          }
+        }
+        return new Response("error", { status: 500, statusText: email });
+      }
     } else if (request.method == "POST") {
       let result = "Error: not-academic";
       try {

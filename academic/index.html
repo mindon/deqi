@@ -25,12 +25,18 @@
   <!-- End Google Tag Manager (noscript) -->
 
   <div style="text-align:center">
-    <h1>Academic Email Verification</h1>
+    <h1>AEmV: Academic Email Verification</h1>
+    <div><strong style="font-size:5rem">7697</strong> EMAILS, <strong style="font-size:5rem">6</strong> BLACKLIST</div>
+    <div style="font-size:.8rem;color:gray;margin-bottom:1rem">02/22, 2024 UPDATED</div>
     <code>curl -X POST -d '{"email":"hello@mit.edu"}' "https://mindon.dev/academic"</code>
     <script>function demo(v){
+      if(/^\s*$/.test(v)) return;
       fetch('/academic',{method:'POST',body:JSON.stringify({email: v})}).then(resp=>resp.text()).then(resp=>alert(resp)).catch(err=>alert(err));
     }</script>
     <p><input type="search" onsearch="demo(this.value)" placeholder="try an email"></p>
-    <p><a href="https://paypal.me/airoff" target="_paypal">Sponor Me with PayPal</a></p>
+    <p><a href="https://paypal.me/airoff" target="_paypal">Sponor Me on PayPal</a></p>
+    <p><a href="https://x.com/mindon" style="display: flex; align-items: center;justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+      <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+    </svg> @MINDON</a></p>
   </div>
 </body></html>
