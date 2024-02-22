@@ -1,3 +1,5 @@
+import { OpenAI } from "https://raw.githubusercontent.com/mindon/openai/master/mod.ts";
+
 const key = Deno.env.get("OPENAI_API_KEY");
 const openAI = key ? new OpenAI(key) : null;
 const openVIP: { [key: string]: OpenAI } = {};

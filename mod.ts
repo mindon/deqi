@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
 import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
-import { OpenAI } from "https://raw.githubusercontent.com/mindon/openai/master/mod.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
 
