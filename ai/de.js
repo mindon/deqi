@@ -360,7 +360,7 @@ export const aichat = {
         ? ""
         : (typeof v === "string"
           ? v
-          : v.choices && v.choices[0].delta.content || "")
+          : v.choices && v.choices[0].delta.content || "").replace(/\n$/, '')
     ).join("");
     return { fin, cell: { content } };
   }, // end of got
