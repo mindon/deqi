@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160" height="160" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ear">
+    <path d="m82.756 275.37c18.873-60.94-62.557-51.391-46.261-11.03m47.744-15.731c-32.298 9.2815-40.691 49.197 3.0274 53.981m18.88 1.5391c10.555 36.231-24.402 43.029-43.282 32.084-16.915-10.701-10.061-31.213-28.825-46.199-11.453-9.1467-20.16-12.481-21.676-37.337-2.16-35.409 60.031-74.203 90.115-16.48" fill="#f7f7f7" stroke="#333" stroke-linecap="round" stroke-linejoin="round" stroke-width="10"/>
+  </symbol>
+ <g fill="none" stroke="#ddd" stroke-linecap="round" stroke-width="6.4">
+  <circle cx="256" cy="256" r="165.81"/>
+  <path d="m148.15 245.21c0-40.855 60.967-41.67 60.393 0"/>
+  <path d="m303.45 245.21c0-40.855 60.967-41.67 60.393 0"/>
+  <path d="m155.9 312.75c46.652 77.015 154.49 74.763 199.65 0.55305"/>
+ </g>
+ <use href="#ear" />
+ <use href="#ear" transform="translate(512, 0) scale(-1, 1)" />
+</svg>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="320" height="320" version="1.1" viewBox="0 0 84.667 84.667" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <marker id="arrow" overflow="visible" markerHeight="1" markerWidth="1" orient="auto-start-reverse" preserveAspectRatio="xMidYMid" viewBox="0 0 1 1">
+   <path transform="scale(.5)" d="m5.77 0-8.65 5v-10z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-width="1pt"/>
+  </marker>
+  <symbol id="locate">
+   <g transform="rotate(-66.868 45.303 43.921)">
+    <path d="m69.404 32.38 2.9792-3.1702"/>
+    <path d="m66.754 34.941-2.7195 2.8567"/>
+    <path d="m66.554 31.78-2.4209-2.1822"/>
+    <path d="m69.637 34.863 3.1344 2.5971"/>
+    <circle transform="rotate(39.645)" cx="73.762" cy="-17.382" r="3.537" stroke-dasharray="0.264584, 0.793753" stroke-width=".26458"/>
+   </g>
+  </symbol>
+ <g fill="#ccc">
+  <circle cx="41.747" cy="18.937" r="6.927"/>
+  <path d="m10.922 31.858c-3.0222 0.89805-2.6288 4.1027 0.30117 3.9152l23.796-2.5945-1.7341 17.951-10.106 27.903c-1.1485 2.3495 3.1691 3.7493 4.7427 1.0721l12.95-26.037 12.751 25.023c1.3135 3.6264 5.7571 1.1536 4.8353-1.0424l-9.8851-27.258-1.7804-17.266 20.298 1.913c3.4227 0.48338 3.9465-3.3123 1.0392-3.869l-21.923-4.4579c-2.647 1.531-6.4594 1.9945-9.9983-0.57254z"/>
+ </g>
+ <g fill="none" stroke="#333" stroke-linecap="round" stroke-linejoin="round" stroke-width=".79375">
+  <use transform="matrix(.75402 .47919 -.47919 .75402 32.18 43.027)" xlink:href="#locate"/>
+  <use transform="rotate(59.072 14.09 -4.0723)" xlink:href="#locate"/>
+  <path d="m70.827 35.278c0.9131 2.4504-1.6204 5.6243-5.4274 5.156" marker-end="url(#arrow)" />
+ </g>
+</svg>
