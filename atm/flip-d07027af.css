@@ -1,0 +1,1 @@
+body,html{margin:0;padding:0;overscroll-behavior:none}body{height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;margin:0 1rem;background-color:#333}atm-flip{--size:min(100vw - 2rem, 100vh);width:var(--size);height:var(--size)}@media all and (hover:none){atm-flip{width:calc(100vw - 2rem);height:100vh}}flip{display:none}
