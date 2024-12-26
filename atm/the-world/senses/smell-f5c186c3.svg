@@ -8,10 +8,12 @@
  </g>
  <g transform="translate(0,-19.2)" stroke-linecap="round">
   <g transform="translate(0,44.8)" fill-opacity=".95344" stroke-width="19.2">
-   <ellipse cx="230.4" cy="313.6" rx="19.2" ry="9.6"/>
-   <ellipse cx="281.6" cy="313.6" rx="19.2" ry="9.6"/>
+   <ellipse cx="230.4" cy="313.6" rx="19.2" ry="9.6" fill="#4d4d4d"/>
+   <ellipse cx="230.69" cy="316.22" rx="14.545" ry="7.2727" fill="#999" stroke-width="14.546"/>
+   <ellipse cx="281.6" cy="313.6" rx="19.2" ry="9.6" fill="#4d4d4d"/>
+   <ellipse cx="282.47" cy="316.22" rx="14.545" ry="7.2727" fill="#999" stroke-width="14.546"/>
   </g>
-  <g transform="translate(-.56356 44.8)" fill="none" stroke="#000002" stroke-width="6.4">
+  <g transform="translate(-.56356 44.8)" fill="none" stroke="#000002" stroke-width="3">
    <path d="m305.83 320.29c16.283-7.5774 13.188-24.231 1.3646-32.094-10.556-7.0196-27.342-3.8178-27.293-30.676"/>
    <path d="m207.29 320.29c-16.283-7.5774-13.188-24.231-1.3646-32.094 10.556-7.0196 27.342-3.8178 27.293-30.676"/>
   </g>
