@@ -18,7 +18,7 @@ const mimes: { [key: string]: string } = {
 };
 
 async function handler(request: Request): Promise<Response> {
-  let { pathname } = new URL(request.url);
+  let { pathname, search } = new URL(request.url);
   if (/\.ts$|^\/(dechat|featuers)\//i.test(pathname)) {
     return new Response(undefined, { status: 404 });
   }

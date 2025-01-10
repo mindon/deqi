@@ -3,18 +3,26 @@ const cacheOne = await (async (src) => {
   const c = await Deno.readTextFile(src);
   const tag = "[ONEDAY]";
   const i = c.indexOf(tag);
-  return [c.substring(i), c.substring(i + tag.length)];
+  return [c.substring(0, i), c.substring(i + tag.length)];
 })(`.${based}one.html`);
 
 const cached365: { [date: string]: string } = {};
 const datexp = /^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
 const feb = /^023/;
-export async function daily(date: string) {
+export async function daily(date: string, force = false) {
   if (!datexp.test(date) || feb.test(date)) {
     return Response.redirect(`https://mindon.dev${based}`, 302);
   }
   let flips = cached365[date];
-  if (flips) return new Response([cacheOne[0], flips, cacheOne[1]].join(""));
+  const headers = {
+    status: 200,
+    headers: {
+      "content-type": "text/html",
+    },
+  };
+  if (flips && !force) {
+    return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
+  }
 
   const mtag = `<serie name="${date.substring(0, 2)}"`;
   const serieEnd = "</serie>";
@@ -70,5 +78,5 @@ export async function daily(date: string) {
   flips = doy.join("\n");
   cached365[date] = flips;
   console.log(date);
-  return new Response([cacheOne[0], flips, cacheOne[1]].join(""));
+  return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
 }
