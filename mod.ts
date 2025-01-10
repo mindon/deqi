@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
 import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
+import { daily } from "./features/daily.ts";
 
 const enrollKey = Deno.env.get("ACADEMIC_ENROLL");
 
@@ -29,7 +30,7 @@ async function handler(request: Request): Promise<Response> {
       const { headers } = request;
       const x = headers.get("x-academic-enroll");
       if (enrollKey && x == enrollKey) {
-        const {email, desc} = await request.json();
+        const { email, desc } = await request.json();
         if (email && desc && email?.length < 128) {
           if (
             await enroll(
@@ -56,6 +57,13 @@ async function handler(request: Request): Promise<Response> {
     } else {
       pathname = `${pathname}/`;
     }
+  }
+  if (
+    pathname.startsWith("/atm/nasa/daily/@") && /\/@\d{2}.\d{2}$/.test(pathname)
+  ) {
+    return await daily(
+      pathname.substring(pathname.lastIndexOf("@")).replace(".", ""),
+    );
   }
   if (pathname.endsWith("/")) {
     pathname = `${pathname}index.html`;
