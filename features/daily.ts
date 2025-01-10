@@ -11,7 +11,7 @@ const datexp = /^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
 const feb = /^023/;
 export async function daily(date: string) {
   if (!datexp.test(date) || feb.test(date)) {
-    return Response.redirect(based, 302);
+    return Response.redirect(`https://mindon.dev${based}`, 302);
   }
   let flips = cached365[date];
   if (flips) return new Response([cacheOne[0], flips, cacheOne[1]].join(''));
