@@ -4,7 +4,7 @@ const cacheOne = await (async (src) => {
   const tag = "<!--ONEDAY-->";
   const i = c.indexOf(tag);
   return [c.substring(i), c.substring(i + tag.length)];
-})(`..${based}one.html`);
+})(`.${based}one.html`);
 
 const cached365: { [date: string]: string } = {};
 const datexp = /^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
@@ -28,7 +28,7 @@ export async function daily(date: string) {
     try {
       const year = dirEntry.name;
       const body = await Deno.readTextFile(
-        `..${based}${dirEntry.name}/index.html`,
+        `.${based}${dirEntry.name}/index.html`,
       );
       let i = body.indexOf(mtag);
       if (i < 0) {
@@ -72,5 +72,3 @@ export async function daily(date: string) {
   console.log(date);
   return new Response([cacheOne[0], flips, cacheOne[1]].join(''));
 }
-
-console.log(await daily("0101"));
