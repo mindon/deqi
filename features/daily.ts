@@ -23,7 +23,7 @@ export async function daily(date: string) {
   const flipBegin = "<flip ";
   const flipEnd = "</flip>";
   const doy: string[][] = [];
-  for await (const dirEntry of Deno.readDir(`..${based}`)) {
+  for await (const dirEntry of Deno.readDir(`.${based}`)) {
     if (!dirEntry.isDirectory) continue;
     try {
       const year = dirEntry.name;
