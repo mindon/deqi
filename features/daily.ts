@@ -60,15 +60,17 @@ export async function daily(date: string, force = false) {
           continue;
         }
       }
-      j = monthSerie.indexOf(flipEnd);
+      j = monthSerie.indexOf(flipEnd, i);
       if (j < 0) {
         console.log(year, date);
         continue;
       }
       j += flipEnd.length;
+      const flip = monthSerie.substring(i, j);
+      // console.assert(flip.match(/\/flip/g)?.length === 1, flip.match(/\/flip/g)?.length);
       doy.push([
         year,
-        monthSerie.substring(i, j).replace(/ key=\"\d+\"/, ` key="${year}"`),
+        flip.replace(/ key=\"\d+\"/, ` key="${year}"`),
       ]);
     } catch (err) {
       console.log(err);
@@ -77,6 +79,7 @@ export async function daily(date: string, force = false) {
   }
   flips = doy.join("\n");
   cached365[date] = flips;
-  console.log(date);
   return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
 }
+
+console.log(await daily("0101"));
