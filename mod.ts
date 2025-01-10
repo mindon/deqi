@@ -62,7 +62,7 @@ async function handler(request: Request): Promise<Response> {
     pathname.startsWith("/atm/nasa/daily/@") && /\/@\d{2}.\d{2}$/.test(pathname)
   ) {
     return await daily(
-      pathname.substring(pathname.lastIndexOf("@")).replace(".", ""),
+      pathname.substring(pathname.lastIndexOf("@") + 1).replace(".", ""),
     );
   }
   if (pathname.endsWith("/")) {

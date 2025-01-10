@@ -1,7 +1,7 @@
 const based = "/atm/nasa/daily/";
 const cacheOne = await (async (src) => {
   const c = await Deno.readTextFile(src);
-  const tag = "<!--ONEDAY-->";
+  const tag = "[ONEDAY]";
   const i = c.indexOf(tag);
   return [c.substring(i), c.substring(i + tag.length)];
 })(`.${based}one.html`);
@@ -14,7 +14,7 @@ export async function daily(date: string) {
     return Response.redirect(`https://mindon.dev${based}`, 302);
   }
   let flips = cached365[date];
-  if (flips) return new Response([cacheOne[0], flips, cacheOne[1]].join(''));
+  if (flips) return new Response([cacheOne[0], flips, cacheOne[1]].join(""));
 
   const mtag = `<serie name="${date.substring(0, 2)}"`;
   const serieEnd = "</serie>";
@@ -70,5 +70,5 @@ export async function daily(date: string) {
   flips = doy.join("\n");
   cached365[date] = flips;
   console.log(date);
-  return new Response([cacheOne[0], flips, cacheOne[1]].join(''));
+  return new Response([cacheOne[0], flips, cacheOne[1]].join(""));
 }
