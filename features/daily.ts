@@ -54,7 +54,7 @@ export async function daily(date: string, force = false) {
           console.log(year, date);
           continue;
         }
-        i = monthSerie.lastIndexOf(flipBegin);
+        i = monthSerie.lastIndexOf(flipBegin, i);
         if (i < 0) {
           console.log(year, date);
           continue;
@@ -67,6 +67,7 @@ export async function daily(date: string, force = false) {
       }
       j += flipEnd.length;
       const flip = monthSerie.substring(i, j);
+      // console.log(flip, year);
       // console.assert(flip.match(/\/flip/g)?.length === 1, flip.match(/\/flip/g)?.length);
       doy.push([
         year,
@@ -82,4 +83,4 @@ export async function daily(date: string, force = false) {
   return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
 }
 
-console.log(await daily("0101"));
+// console.log(await daily("0101"));
