@@ -70,15 +70,16 @@ export async function daily(date: string, force = false) {
       // console.log(flip, year);
       // console.assert(flip.match(/\/flip/g)?.length === 1, flip.match(/\/flip/g)?.length);
       doy.push([
-        year,
-        flip.replace(/ key=\"\d+\"/, ` key="${year}"`),
+        parseInt(year, 10),
+        flip.replace(/<flip (key=\"\d+\")?/, `<flip key="${year}"`),
       ]);
     } catch (err) {
       console.log(err);
       continue;
     }
   }
-  flips = doy.join("\n");
+  doy.sort((a, b) => +(a[0] < b[0]) + (-(a[0] > b[0])));
+  flips = doy.map((d) => d[1]).join("\n");
   cached365[date] = flips;
   return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
 }
