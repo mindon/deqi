@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
 import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
-import { daily } from "./features/daily.ts";
+import { daily, follow } from "./features/daily.ts";
 
 const enrollKey = Deno.env.get("ACADEMIC_ENROLL");
 
@@ -57,6 +57,9 @@ async function handler(request: Request): Promise<Response> {
     } else {
       pathname = `${pathname}/`;
     }
+  }
+  if (pathname === "/atm/nasa/daily/follow") {
+    return await follow(search.substring(1));
   }
   if (
     pathname.startsWith("/atm/nasa/daily/@") && /\/@\d{2}.\d{2}$/.test(pathname)
