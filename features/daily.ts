@@ -8,6 +8,9 @@ export async function daily(date: string, force = false) {
   if (!datexp.test(date) || feb.test(date)) {
     return Response.redirect(`https://mindon.dev${based}`, 302);
   }
+  const km = date.substring(0, 2);
+  const kd = date.substring(2);
+  const latest = cachedDay[km]?.[kd];
   let flips = cached365[date];
   const headers = {
     status: 200,
@@ -15,22 +18,27 @@ export async function daily(date: string, force = false) {
       "content-type": "text/html",
     },
   };
+  if (cacheOne.length == 0) {
+    cacheOne = await (async (src) => {
+      const c = await Deno.readTextFile(src);
+      const tag = "[ONEDAY]";
+      const i = c.indexOf(tag);
+      return [c.substring(0, i), c.substring(i + tag.length)];
+    })(`.${based}one.html`);
+  }
   if (flips && !force) {
-    if (cacheOne.length == 0) {
-      cacheOne = await (async (src) => {
-        const c = await Deno.readTextFile(src);
-        const tag = "[ONEDAY]";
-        const i = c.indexOf(tag);
-        return [c.substring(0, i), c.substring(i + tag.length)];
-      })(`.${based}one.html`);
-    }
-    return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
+    return new Response(
+      [cacheOne[0], !latest ? flips : `${latest}\n${flips}`, cacheOne[1]].join(
+        "",
+      ),
+      headers,
+    );
   }
 
-  const mtag = `<serie name="${date.substring(0, 2)}"`;
+  const mtag = `<serie name="${km}"`;
   const serieEnd = "</serie>";
-  const dtag = `<flip key="${date.substring(2)}"`;
-  const small = `<small>${date.substring(2)}/`;
+  const dtag = `<flip key="${kd}"`;
+  const small = `<small>${kd}/`;
   const flipBegin = "<flip ";
   const flipEnd = "</flip>";
   const doy: [number, string][] = [];
@@ -84,7 +92,12 @@ export async function daily(date: string, force = false) {
   doy.sort((a, b) => +(a[0] < b[0]) + (-(a[0] > b[0])));
   flips = doy.map((d) => d[1]).join("\n");
   cached365[date] = flips;
-  return new Response([cacheOne[0], flips, cacheOne[1]].join(""), headers);
+  return new Response(
+    [cacheOne[0], !latest ? flips : `${latest}\n${flips}`, cacheOne[1]].join(
+      "",
+    ),
+    headers,
+  );
 }
 
 // console.log(await daily("0101"));
