@@ -135,7 +135,6 @@ export async function follow(date: string) {
 
 // -----
 const kex = /\d+/;
-const link = /<TD>\s*<A HREF="([^"]+)">\s*<IMG/;
 const startTag = "</h1>";
 const stopTag = "<b> Explanation: </b>";
 const ifrx =
