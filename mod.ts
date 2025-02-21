@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.183.0/http/server.ts";
+import { serve, type ConnInfo } from "https://deno.land/std@0.183.0/http/server.ts";
 import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
@@ -17,11 +17,32 @@ const mimes: { [key: string]: string } = {
   csv: "text/csv",
 };
 
-async function handler(request: Request): Promise<Response> {
+function assertIsNetAddr(addr: Deno.Addr): asserts addr is Deno.NetAddr {
+  if (!['tcp', 'udp'].includes(addr.transport)) {
+    throw new Error('Not a valid network address');
+  }
+}
+
+function addrRemote(connInfo: ConnInfo): Deno.NetAddr {
+  assertIsNetAddr(connInfo.remoteAddr);
+  return connInfo.remoteAddr;
+}
+
+async function handler(request: Request, info: ConnInfo): Promise<Response> {
   let { pathname, search } = new URL(request.url);
   if (/\.ts$|^\/(dechat|featuers)\//i.test(pathname)) {
     return new Response(undefined, { status: 404 });
   }
+  if (pathname == "ipr") {
+    try {
+        const {hostname, port} = addrRemote(info);
+        const message = `from: ${hostname}\n`;
+        console.log(message);
+        return new Response(message);
+    } catch(err) {
+    }
+  }
+    
   if (pathname == "/chat") {
     return chat(request);
   }
