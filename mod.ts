@@ -33,7 +33,7 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
   if (/\.ts$|^\/(dechat|featuers)\//i.test(pathname)) {
     return new Response(undefined, { status: 404 });
   }
-  if (pathname == "ipr") {
+  if (pathname == "/ipr") {
     try {
         const {hostname, port} = addrRemote(info);
         const message = `from: ${hostname}\n`;
