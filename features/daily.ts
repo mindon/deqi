@@ -5,6 +5,12 @@ const cached365: { [date: string]: string } = {};
 const datexp = /^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
 const feb = /^023/;
 export async function daily(date: string, force = false) {
+  if (date === "today") {
+    const now = new Date();
+    date = `${`0${now.getMonth() + 1}`.slice(-2)}${
+      `0${now.getDate()}`.slice(-2)
+    }`;
+  }
   if (!datexp.test(date) || feb.test(date)) {
     return Response.redirect(`https://mindon.dev${based}`, 302);
   }

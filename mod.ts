@@ -1,4 +1,7 @@
-import { serve, type ConnInfo } from "https://deno.land/std@0.183.0/http/server.ts";
+import {
+  type ConnInfo,
+  serve,
+} from "https://deno.land/std@0.183.0/http/server.ts";
 import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
@@ -18,8 +21,8 @@ const mimes: { [key: string]: string } = {
 };
 
 function assertIsNetAddr(addr: Deno.Addr): asserts addr is Deno.NetAddr {
-  if (!['tcp', 'udp'].includes(addr.transport)) {
-    throw new Error('Not a valid network address');
+  if (!["tcp", "udp"].includes(addr.transport)) {
+    throw new Error("Not a valid network address");
   }
 }
 
@@ -35,14 +38,14 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
   }
   if (pathname == "/ipr") {
     try {
-        const {hostname, port} = addrRemote(info);
-        const message = `from: ${hostname}\n`;
-        console.log(message);
-        return new Response(message);
-    } catch(err) {
+      const { hostname, port } = addrRemote(info);
+      const message = `from: ${hostname}\n`;
+      console.log(message);
+      return new Response(message);
+    } catch (err) {
     }
   }
-    
+
   if (pathname == "/chat") {
     return chat(request);
   }
@@ -82,12 +85,12 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
   if (pathname === "/atm/nasa/daily/follow") {
     return await follow(search.substring(1));
   }
-  if (
-    pathname.startsWith("/atm/nasa/daily/@") && /\/@\d{2}.\d{2}$/.test(pathname)
-  ) {
-    return await daily(
-      pathname.substring(pathname.lastIndexOf("@") + 1).replace(".", ""),
+  if (pathname.startsWith("/atm/nasa/daily/@")) {
+    const today = pathname.substring(pathname.lastIndexOf("@") + 1).replace(
+      ".",
+      "",
     );
+    return await daily(today);
   }
   if (pathname.endsWith("/")) {
     pathname = `${pathname}index.html`;
