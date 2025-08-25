@@ -7,7 +7,7 @@ Refresh to next lucky charm">↺</a>`)),e=`${e}${o}/`,i=r[t]}let{src:a,way:d,des
       <a href="${a}" target="_${d||"donate"}">${p}</a>
     `}:{pxn:n,payment:i,dom:h`
     <div class="info"><pre>${a||p}</pre></div>
-  `}}var c=class extends _t{constructor(){super(...arguments);this.size=180;this.assets="./payments/";this.payments=[{way:"wechat",desc:"\u5FAE\u4FE1 WeChat",src:"mindon_wechat.png"},{way:"alipay",desc:"\u652F\u4ED8\u5BF6 Alipay",src:"mindon_alipay.png"},{way:"paypal",desc:"\u8C9D\u5BF6 PayPal",memo:"n \xD7 $0.99 to developer",src:"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YSVEJMBLM3AFG"},{way:"cc",desc:"\u516C\u76CA\u91D1 Community Chest",src:[]},{way:"lucky",desc:"\u5E78\u904B\u7B26 Lucky Charm",src:[{way:"join",src:h`
+  `}}var c=class extends _t{constructor(){super(...arguments);this.size=180;this.assets="./payments/";this.payments=[{way:"wechat",desc:"\u5FAE\u4FE1 WeChat",src:"mindon_wechat.png"},{way:"alipay",desc:"\u652F\u4ED8\u5BF6 Alipay",src:"mindon_alipay.png"},{way:"paypal",desc:"\u8C9D\u5BF6 PayPal",memo:"n \xD7 $0.99 to developer",src:"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YSVEJMBLM3AFG"},{way:"cc",desc:"\u516C\u76CA\u91D1 Comm-Chest",src:[]},{way:"lucky",desc:"\u5E78\u904B\u7B26 Lucky Charm",src:[{way:"join",src:h`
             <pre class="memo">隨機收錢人
 幸運隨時降臨
 Lucky Charm</pre>${V("\u52A0\u5165 JOIN +")}
@@ -46,7 +46,7 @@ just don't want to pay</pre><p>
     #ways {
       display: flex;
       align-items: center;
-      padding: 1rem 1.5rem;
+      padding: 1rem 0;
       background: #fff;
     }
     div.way {
