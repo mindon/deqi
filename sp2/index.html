@@ -125,15 +125,21 @@
         </button>
     </pay-ways>
     </dialog>
-    <script type="module" src="./spin-space.79d22838e71034acaded23ae43bf2366.js"></script>
-    <script type="module" src="./pay-ways.45feef0bc34eb9b7f3b7f45529acb2c9.js"></script>
-    <script type="module" src="./capture.5ff4ff6345796b94a89592438909bcf2.js"></script>
+    <atm-qr style="display:none;text-align:center;--qr-size:90px" logo="../atm/atm.svg" id="myqr"></atm-qr>
+    <script type="module" src="./spin-space.4fc0102b3b84a920dac36adcc133581a.js"></script>
+    <script type="module" src="./pay-ways.8f285917020895790414c869e9a61492.js"></script>
+    <script type="module" src="./capture.67f34092338c5aafa3ee971e3d1341fd.js"></script>
+    <script type="module" src="https://mindon.dev/lib/atm-qr-s62dys78.js"></script>
     <script type="module">
     const root = "./phenakisto";
     const sampleSrc = "fish_12f.png";
     const sample = `#${btoa([2,12,1,1200,`${root}/${sampleSrc}`].join('\t'))}`;
     const q$ = (selector) => document.querySelector(selector);
 
+    q$('#myqr').data = location.href;
+    addEventListener('hashchange', () => {
+      q$('#myqr').data = location.href;
+    });
     const lines = (await fetch(`${root}/list.txt`).then(resp => resp.text())).split("\n");
     const mylist = q$("select");
     const fcc = /\d+(f|cc)/i;
@@ -199,7 +205,7 @@
     q$('#mypay button').onclick = (evt) => {
       const btn = evt.target;
       btn.disabled = true;
-      sp2ani(myspin.name.replace(/\.\w+$/, ''), myspin, () => btn.disabled = false);
+      sp2ani(myspin.name.replace(/\.\w+$/, ''), myspin, () => btn.disabled = false, q$('#myqr')._box);
     };
     </script>
 
