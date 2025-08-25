@@ -82,6 +82,28 @@
         line-height: 0.8rem;
         cursor: pointer;
     }
+    spin-space {
+        display: block;
+        text-align: center;
+    }
+    button:disabled {
+        opacity: .65;
+    }
+    button.download {
+        display:flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    button.download * {
+        pointer-events: none;
+    }
+    button.download > div {
+        margin-left: auto;
+    }
+    button.download > svg {
+        margin-left: .5rem;
+        margin-right: auto;
+    }
     </style>
 </head>
 <body>
@@ -94,12 +116,18 @@
             <input id="myfile" type="file" accept="image/*" title="choose a phenakistoscope image file">
         </div>
     </div>
-    <dialog id="mypay" closedby="any"><a>×</a><pay-ways>
-        <button>下載動畫 TODO</button>
+    <dialog id="mypay" closedby="any"><a>×</a><pay-ways cc-data="cc.json?20250825" lucky-data="lucky.json?20250825">
+        <button class="download">
+            <div>下載❝旋圈SP²動畫<br><small>Download as WebM</small></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-bar-down" viewbox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"></path>
+            </svg>
+        </button>
     </pay-ways>
     </dialog>
-    <script type="module" src="./spin-space.a21ded8e991cf836dee065e15011eb27.js"></script>
-    <script type="module" src="./pay-ways.1e321b86f5d206eae03f4476981079a5.js"></script>
+    <script type="module" src="../spin/spin-space.79d22838e71034acaded23ae43bf2366.js"></script>
+    <script type="module" src="../spin/pay-ways.45feef0bc34eb9b7f3b7f45529acb2c9.js"></script>
+    <script type="module" src="../spin/capture.5ff4ff6345796b94a89592438909bcf2.js"></script>
     <script type="module">
     const root = "./phenakisto";
     const sampleSrc = "fish_12f.png";
@@ -150,6 +178,7 @@
     q$('#myfile').addEventListener('change', (evt) => {
       const fd = evt.target.files[0];
       if(!fd) return;
+      myspin.name = fd.name;
       const reader = new FileReader();
       reader.readAsDataURL(fd);
       reader.onload = () => {
@@ -160,9 +189,19 @@
       };
     });
 
-    q$('#mynext').onclick = () => q$('#mypay').showModal();
-    q$('#mypay a').onclick = () => q$('#mypay').close();
+    const mypay = q$('#mypay');
+    q$('#mynext').onclick = () => {
+      mypay.querySelector("pay-ways").reset();
+      mypay.showModal();
+    };
+    q$('#mypay a').onclick = () => mypay.close();
 
-    q$('#mypay button').onclick = () => alert("this feature is under developing, in a few days")
+    q$('#mypay button').onclick = (evt) => {
+      const btn = evt.target;
+      btn.disabled = true;
+      sp2ani(myspin.name.replace(/\.\w+$/, ''), myspin, () => btn.disabled = false);
+    };
     </script>
+
+
 </body></html>
