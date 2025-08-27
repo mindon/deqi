@@ -171,9 +171,11 @@ just don't want to pay</pre><p>
     slot.disabled::after{
       content: var(--countdown);
       position: absolute;
-      top: 16%;
-      right: 1.18rem;
-      color: #0d6efd;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3em;
+      color: #0d6efdcc;
     }
     .way:has(img) pre {
         margin-block-end: 0;
