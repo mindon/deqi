@@ -105,7 +105,7 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
     body = "Hello, DeQi - from Mindon";
     updated = true;
   }
-  if (pathname.startsWith("/lib/")) {
+  if (/^\/(atm|lib)\//.test(pathname)) {
     headers.push(["Access-Control-Allow-Origin", "*"]);
     updated = true;
   }
