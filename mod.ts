@@ -120,5 +120,6 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
 }
 
 serve(handler, {
+  hostname: "0.0.0.0",
   port: 80,
 });
