@@ -49,7 +49,7 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
   if (pathname == "/chat") {
     return chat(request);
   }
-  if (pathname == "/academic-ev") {
+  if (pathname == "/academic") {
     if (request.method == "PUT") {
       const { headers } = request;
       const x = headers.get("x-academic-enroll");

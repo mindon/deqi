@@ -1,4 +1,4 @@
-const token = Deno.getEnv("DENO_KV_ACCESS_TOKEN");
+const token = Deno.env.get("KV_TOKEN");
 const kv = await Deno.openKv(token ? `https://api.deno.com/databases/${token}/connect` : undefined);
 
 const spaces = /^\s+|\s+$/g;
