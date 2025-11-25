@@ -74,7 +74,7 @@ export async function enroll(addr: string, desc: string) {
       return true;
     }
   } catch (err) {
-    if (err.message !== "not-academic") {
+    if (err != "not-academic") {
       return false;
     }
   }
