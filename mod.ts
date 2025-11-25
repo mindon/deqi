@@ -58,6 +58,8 @@ Deno.serve(async (req: Request, info) => {
         const data = await req.json();
         if (data?.email?.length < 128) {
           result = (await academic(data.email))?.name ?? "NOA";
+        } else {
+          console.log(data);
         }
       } catch (err) {
         result = err;
