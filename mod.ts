@@ -1,4 +1,3 @@
-import { ConnInfo } from "jsr:@std/http/server";
 import { serveFile } from "jsr:@std/http/file-server";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
@@ -17,26 +16,15 @@ const mimes: { [key: string]: string } = {
   csv: "text/csv",
 };
 
-function assertIsNetAddr(addr: Deno.Addr): asserts addr is Deno.NetAddr {
-  if (!["tcp", "udp"].includes(addr.transport)) {
-    throw new Error("Not a valid network address");
-  }
-}
-
-function addrRemote(connInfo: ConnInfo): Deno.NetAddr {
-  assertIsNetAddr(connInfo.remoteAddr);
-  return connInfo.remoteAddr;
-}
-
-Deno.serve((req: Request, info: ConnInfo) => {
-  let { pathname, search } = new URL(request.url);
+Deno.serve(async (req: Request, info) => {
+  let { pathname, search } = new URL(req.url);
   if (/\.ts$|^\/(dechat|featuers)\//i.test(pathname)) {
     return new Response(undefined, { status: 404 });
   }
   if (pathname == "/ipr") {
     try {
-      const { hostname, port } = addrRemote(info);
-      const message = `from: ${hostname}\n`;
+      const remoteIp = (info.remoteAddr as Deno.NetAddr).hostname;
+      const message = `from: ${remoteIp}\n`;
       console.log(message);
       return new Response(message);
     } catch (err) {
@@ -44,14 +32,14 @@ Deno.serve((req: Request, info: ConnInfo) => {
   }
 
   if (pathname == "/chat") {
-    return chat(request);
+    return chat(req);
   }
   if (pathname == "/academic") {
-    if (request.method == "PUT") {
-      const { headers } = request;
+    if (req.method == "PUT") {
+      const { headers } = req;
       const x = headers.get("x-academic-enroll");
       if (enrollKey && x == enrollKey) {
-        const { email, desc } = await request.json();
+        const { email, desc } = await req.json();
         if (email && desc && email?.length < 128) {
           if (
             await enroll(
@@ -64,10 +52,10 @@ Deno.serve((req: Request, info: ConnInfo) => {
         }
         return new Response("error", { status: 500, statusText: email });
       }
-    } else if (request.method == "POST") {
+    } else if (req.method == "POST") {
       let result = "Error: not-academic";
       try {
-        const data = await request.json();
+        const data = await req.json();
         if (data.email.length < 128) {
           result = (await academic(data.email))?.name ?? "NOA";
         }
@@ -93,7 +81,7 @@ Deno.serve((req: Request, info: ConnInfo) => {
     pathname = `${pathname}index.html`;
   }
 
-  const resp = await serveFile(request, pathname.substring(1));
+  const resp = await serveFile(req, pathname.substring(1));
   const { status, statusText } = resp;
   const headers = [...resp.headers];
   let body = resp.body;
