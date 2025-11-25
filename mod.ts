@@ -1,8 +1,5 @@
-import {
-  type ConnInfo,
-  serve,
-} from "https://deno.land/std@0.183.0/http/server.ts";
-import { serveFile } from "https://deno.land/std@0.183.0/http/file_server.ts";
+import { ConnInfo, serve } from "https://deno.land/std@0.210.0/http/server.ts";
+import { serveFile } from "https://deno.land/std@0.210.0/http/file_server.ts";
 import { chat } from "./features/chat.ts";
 import { academic, enroll } from "./features/academic.ts";
 import { daily, follow } from "./features/daily.ts";
@@ -31,7 +28,7 @@ function addrRemote(connInfo: ConnInfo): Deno.NetAddr {
   return connInfo.remoteAddr;
 }
 
-async function handler(request: Request, info: ConnInfo): Promise<Response> {
+serve(async (request, info) => {
   let { pathname, search } = new URL(request.url);
   if (/\.ts$|^\/(dechat|featuers)\//i.test(pathname)) {
     return new Response(undefined, { status: 404 });
@@ -117,9 +114,4 @@ async function handler(request: Request, info: ConnInfo): Promise<Response> {
     });
   }
   return resp;
-}
-
-serve(handler, {
-  hostname: "0.0.0.0",
-  port: 80,
-});
+}, { hostname: "0.0.0.0", port: 80 });
