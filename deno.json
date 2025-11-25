@@ -4,5 +4,12 @@
       "env": true
     }
   },
-  "unstable": ["kv", "net"]
+  "unstable": [
+    "kv",
+    "net"
+  ],
+  "deploy": {
+    "org": "airoff",
+    "app": "deqi"
+  }
 }

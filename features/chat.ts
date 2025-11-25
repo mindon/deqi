@@ -38,7 +38,7 @@ export async function chat(request: Request): Promise<Response> {
 
   const xai = {
     messages,
-    model: "gpt-3.5-turbo-16k-0613",
+    model: "gpt-5-chat-latest",
     temperature: 0.7,
     max_tokens: 256, // 2048
     top_p: 1,

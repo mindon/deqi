@@ -56,7 +56,7 @@ Deno.serve(async (req: Request, info) => {
       let result = "Error: not-academic";
       try {
         const data = await req.json();
-        if (data.email.length < 128) {
+        if (data?.email?.length < 128) {
           result = (await academic(data.email))?.name ?? "NOA";
         }
       } catch (err) {
