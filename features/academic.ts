@@ -1,5 +1,5 @@
-const token = Deno.env.get("KV_TOKEN");
-const kv = await Deno.openKv(token ? `https://api.deno.com/databases/${token}/connect` : undefined);
+const name = Deno.env.get("KV_NAME");
+const kv = await Deno.openKv(name ? `https://api.deno.com/databases/${name}/connect` : undefined);
 
 const spaces = /^\s+|\s+$/g;
 const mailbox =
