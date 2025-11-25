@@ -54,17 +54,19 @@ Deno.serve(async (req: Request, info) => {
       }
     } else if (req.method == "POST") {
       let result = "Error: not-academic";
+      let status = 404;
       try {
         const data = await req.json();
         if (data?.email?.length < 128) {
           result = (await academic(data.email))?.name ?? "NOA";
+          status = 200;
         } else {
           console.log(data);
         }
       } catch (err) {
         result = err;
       }
-      return new Response(result, { status: 404 });
+      return new Response(result, { status });
     } else {
       pathname = `${pathname}/`;
     }
