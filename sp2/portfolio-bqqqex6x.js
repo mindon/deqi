@@ -12,16 +12,17 @@ function q$$(selector, call) {
 }
 function jsload(src, ismodule = true) {
   return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.onload = () => {
-      resolve();
+    const js = document.createElement("script");
+    if (ismodule)
+      js.type = "module";
+    js.onload = () => {
+      resolve(true);
     };
-    script.onerror = (err) => {
+    js.onerror = (err) => {
       reject(err);
     };
-    script.src = src;
-    document.body.appendChild(script);
+    js.src = src;
+    document.body.appendChild(js);
   });
 }
 var q = new URLSearchParams(location.search);
@@ -66,17 +67,6 @@ if (/^[\w.$-]+$/.test(preset)) {
           if (n < nmax)
             n += 1;
           render(data[n], myfolio);
-        });
-        let qrready = false;
-        myfolio.addEventListener("click", async (evt) => {
-          if (!qrready) {
-            await jsload("/lib/atm-qr-6rgnf01f.js");
-            qrready = true;
-          }
-          const myqr = q$("#myqr atm-qr");
-          myqr?.setAttribute("data", location.href);
-          myqr?.setAttribute("logo", `https://mindon.dev/atm/link-more.svg`);
-          q$("#myqr")?.showPopover(evt.target);
         });
         document.documentElement.classList.add("portfolio");
         render(data[n], myfolio);
