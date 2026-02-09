@@ -30,7 +30,7 @@
         }
       }
     });
-    if((!/[?&]portfolio=/.test(location.search) && !/[\w.$-]+$/.test(pathname)) || window.portfolioErr) myspin.init(sample);
+    if((!/[?&]portfolio=/.test(location.search) && !/[\w.$-]+$/.test(location.pathname)) || window.portfolioErr) myspin.init(sample);
     else window.addEventListener("portfolio-error", () => myspin.init(sample));
 
     mylist.onchange = () => {
