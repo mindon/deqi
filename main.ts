@@ -81,7 +81,9 @@ Deno.serve(async (req: Request, info) => {
     );
     return await daily(today);
   }
-  if (pathname.endsWith("/")) {
+  if (pathname.startsWith("/sp2/")) {
+    pathname = '/sp2/index.html';
+  } if (pathname.endsWith("/")) {
     pathname = `${pathname}index.html`;
   }
 
