@@ -129,7 +129,7 @@ just don't want to pay</pre><p>
     }
     slot {
       display: flex;
-      flex-direction: column;
+      flex-direction: var(--slot-direction, column);
       align-items: center;
       justify-content: center;
       margin-top: 0.5rem;
