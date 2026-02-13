@@ -46,12 +46,16 @@
     </div>
     <button id="mynext" class="donate">支持❝零末｜下載動畫<br/><small>💰 Donate &amp; Download Ani</small></button>
     <div id="canvas-container">
-      <canvas id="mycanvas" width="800" height="800"></canvas>
+      <canvas id="mycanvas"></canvas>
     </div>
     <script type="module">
     import '../sp2/pay-ways-3r0p7zzf.js';
     import {data24h, jsload} from "./data24h.js";
     const canvas = document.getElementById('mycanvas');
+    const size = Math.min(innerHeight - 120, innerWidth - 40);
+    canvas.width = size;
+    canvas.height = size;
+
     // canvas.addEventListener("date", (evt) => {
     //   console.log("timepoint = ", evt.detail);
     // });
@@ -77,7 +81,10 @@
           return alert('download failed');
         }
 
-        const ext = btn.dataset.as;
+        let ext = btn.dataset.as;
+        if(!ext) {
+          ext = btn.querySelector('svg') ? 'mp4' : 'webm';
+        }
         const key = await data24h(canvas._rows, canvas);
         canvas.removeEventListener("fin", finFn);
         finFn = async (evt) => {

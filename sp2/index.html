@@ -88,6 +88,10 @@
     });
 
     q$('#mynext').todo = async (btn, fin, isVip) => {
-      await sp2ani(`sp2_mindon.dev_${myspin.name.replace(/\.\w+$/, '')}.${btn.dataset.as}`, myspin, fin, myqr, isVip);
+      let ext = btn.dataset.as;
+      if(!ext) {
+        ext = btn.querySelector('svg') ? 'mp4' : 'webm';
+      }
+      await sp2ani(`sp2_mindon.dev_${myspin.name.replace(/\.\w+$/, '')}.${ext}`, myspin, fin, myqr, isVip);
     };
     sp2cam.listen([q$('a.shot')], myspin);</script></body></html>
