@@ -53,6 +53,6 @@ dialog#mypay button.download > svg {
     margin-left: .5rem;
     margin-right: auto;
 }
-button.download * {
-    pointer-event: none;
+button * {
+    pointer-events: none;
 }
