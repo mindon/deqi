@@ -37,7 +37,9 @@
     <div class="controls">
         <input type="file" id="myfile" />
         <select id="mydata">
+            <option value="">data source...</option>
             <option value="2025-10-0456.xlsx">2025-10-0(456)</option>
+            <option value="SiSensingCGM-LB2507Z5CB-02.20.00.00.xlsx">LB2507Z5CB</option>
         </select>
     </div>
     <button id="mynext" class="donate">支持❝零末｜下載動畫<br/><small>💰 Donate &amp; Download Ani</small></button>
@@ -69,7 +71,10 @@
       await data24h(`./data/${src}`, canvas);
     });
 
-    q$('#mydata').value = '2025-10-0456.xlsx';
+    setTimeout(() => {
+      q$('#mydata').value = q$$('#mydata option')[1].value;
+      q$('#mydata').dispatchEvent(new Event("change"));
+    }, 500);
 
     let finFn = () => {};
     q$('#mynext').todo = async (btn, fin, isVip) => {
