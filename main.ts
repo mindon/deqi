@@ -81,6 +81,8 @@ Deno.serve(async (req: Request, info) => {
     );
     return await daily(today);
   }
+  if(pathname.startsWith("/gib/")) pathname = `/glucose-in-blood/${pathname.substring(5)}`;
+
   if (!/\.(js|html|json|css)$/.test(pathname) && /^\/sp2\/[\w.$-]+$/.test(pathname)) {
     pathname = '/sp2/index.html';
   } if (pathname.endsWith("/")) {

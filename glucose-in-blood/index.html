@@ -37,12 +37,7 @@
     <div class="controls">
         <input type="file" id="myfile" />
         <select id="mydata">
-            <option>select data...</option>
-            <option value="SiSensingCGM-LB2507Z5CB-02.20.00.00.xlsx">LB2507Z5CB</option>
-            <option value="SiSensingCGM-LT2408KDHX-02.20.00.00.xlsx">LT2408KDHX</option>
-            <option value="SiSensingCGM-LT2408MNSC-02.20.00.00.xlsx">LT2408MNSC</option>
-            <option value="SiSensingCGM-LT2503R3MX-02.20.00.00.xlsx">LT2503R3MX</option>
-            <option value="SiSensingCGM-LT2503R47B-02.20.00.00.xlsx">LT2503R47B</option>
+            <option value="2025-10-0456.xlsx">2025-10-0(456)</option>
         </select>
     </div>
     <button id="mynext" class="donate">支持❝零末｜下載動畫<br/><small>💰 Donate &amp; Download Ani</small></button>
@@ -57,22 +52,24 @@
     canvas.width = size;
     canvas.height = size;
 
+    const q$ = (selector) => document.querySelector(selector);
+    const q$$ = (selector) => [].slice.call(document.querySelectorAll(selector));
+
     // canvas.addEventListener("date", (evt) => {
     //   console.log("timepoint = ", evt.detail);
     // });
-    document.querySelector('#myfile').addEventListener('change', async (event) => {
+    q$('#myfile').addEventListener('change', async (event) => {
       await data24h(event.target.files[0], canvas);
     }, false);
 
     // --- Init ---
-    document.querySelector('#mydata').addEventListener('change', async (event) => {
+    q$('#mydata').addEventListener('change', async (event) => {
       const {value: src} = event.target;
       if(!src) return;
       await data24h(`./data/${src}`, canvas);
     });
 
-    const q$ = (selector) => document.querySelector(selector);
-    const q$$ = (selector) => [].slice.call(document.querySelectorAll(selector));
+    q$('#mydata').value = '2025-10-0456.xlsx';
 
     let finFn = () => {};
     q$('#mynext').todo = async (btn, fin, isVip) => {
