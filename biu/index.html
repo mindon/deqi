@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>biu — zero-config bundler for HTML + TS/JS, powered by Bun</title>
+    <meta
+      name="description"
+      content="biu is a zero-config, high-performance bundler for HTML + TypeScript/JavaScript, powered by Bun."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #0b0d10;
+        --bg-2: #14181d;
+        --fg: #e6e8eb;
+        --muted: #9aa3ad;
+        --accent: #ffd400;
+        --accent-2: #ff7a00;
+        --border: #232a31;
+        --code-bg: #0f1318;
+        --radius: 10px;
+        --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas,
+          monospace;
+        --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+          Arial, sans-serif;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #ffffff;
+          --bg-2: #f6f7f9;
+          --fg: #14181d;
+          --muted: #5b6470;
+          --border: #e4e7eb;
+          --code-bg: #f2f4f7;
+          --accent: #6860fa;
+          --accent-2: #5f3ffc;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: var(--bg);
+        color: var(--fg);
+        font-family: var(--sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 40px;
+        letter-spacing: -0.02em;
+        background: linear-gradient(
+          90deg,
+          var(--accent),
+          var(--accent-2)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .brand .tag {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      nav {
+        display: flex;
+        gap: 14px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      nav a {
+        color: var(--muted);
+      }
+      nav a:hover {
+        color: var(--fg);
+        text-decoration: none;
+      }
+      .lede {
+        font-size: 18px;
+        color: var(--muted);
+        margin: 0 0 28px;
+      }
+      .lede strong {
+        color: var(--fg);
+      }
+
+      /* Install card */
+      .install {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 36px;
+      }
+      .install-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .install-head h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .tabs {
+        display: inline-flex;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 3px;
+      }
+      .tabs button {
+        appearance: none;
+        background: transparent;
+        color: var(--muted);
+        border: 0;
+        padding: 6px 12px;
+        font: inherit;
+        font-size: 13px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .tabs button[aria-selected="true"] {
+        background: var(--accent);
+        color: var(--bg);
+        font-weight: 600;
+      }
+      .cmd {
+        position: relative;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: var(--mono);
+        font-size: 14px;
+        padding: 14px 16px;
+        overflow-x: auto;
+      }
+      .cmd .prompt {
+        color: var(--muted);
+        user-select: none;
+      }
+      .copy {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font: inherit;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .copy:hover {
+        color: var(--fg);
+      }
+      .copy.copied {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .install-foot {
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      h2 {
+        margin: 36px 0 12px;
+        font-size: 22px;
+        letter-spacing: -0.01em;
+      }
+      h3 {
+        margin: 24px 0 8px;
+        font-size: 16px;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 13.5px;
+        line-height: 1.55;
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.92em;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1px 6px;
+      }
+      pre code {
+        background: transparent;
+        border: 0;
+        padding: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0 16px;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 13px;
+      }
+      td code {
+        white-space: nowrap;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+
+      footer {
+        margin-top: 56px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <h1>biu</h1>
+          <span class="tag">⚡ zero-config bundler · powered by Bun</span>
+        </div>
+        <nav>
+          <a href="#install">Install</a>
+          <a href="#quick-start">Quick start</a>
+          <a href="#options">Options</a>
+          <a href="https://github.com/mindon/biu"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+</svg></a>
+        </nav>
+      </header>
+
+      <p class="lede">
+        A <strong>zero-config</strong>, high-performance bundler for
+        <strong>HTML + TypeScript/JavaScript</strong>, powered by
+        <a href="https://bun.sh/">Bun</a>. Smart module splitting, content
+        hashing, watch mode, dev server, optional Next.js-style backend, and
+        offline CDN caching — all in one binary.
+      </p>
+
+      <!-- Install card with OS auto-detection -->
+      <section id="install" class="install">
+        <div class="install-head">
+          <h2>Install</h2>
+          <div class="tabs" role="tablist" aria-label="Operating system">
+            <button role="tab" data-os="mac" aria-selected="false">macOS</button>
+            <button role="tab" data-os="linux" aria-selected="false">Linux</button>
+            <button role="tab" data-os="windows" aria-selected="false">Windows</button>
+          </div>
+        </div>
+        <div class="cmd" id="cmd">
+          <span class="prompt" id="cmd-prompt">$ </span><span id="cmd-text"
+            >curl -fsSL https://mindon.dev/biu/install | bash</span
+          >
+          <button class="copy" id="copy-btn" type="button">Copy</button>
+        </div>
+      </section>
+
+      <h2 id="quick-start">Quick Start</h2>
+      <pre><code># Place `biu` in your PATH, then from any project directory:
+biu                        # Build ./src → ./dist
+biu ./src ./dist           # Explicit source &amp; output dirs
+biu --serve 3000           # Dev server with live reload</code></pre>
+      <p>
+        <em
+          >Note: if there's a <code>./backend</code> directory, it will be used
+          as <a href="https://nextjs.org">Next.js</a>-style backend.</em
+        >
+      </p>
+
+      <h2 id="syntax">Command Syntax</h2>
+      <pre><code>biu [options] [srcDir] [outDir]</code></pre>
+      <table>
+        <thead>
+          <tr><th>Argument</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>srcDir</code></td><td><code>./src</code></td><td>Source directory</td></tr>
+          <tr><td><code>outDir</code></td><td><code>./dist</code></td><td>Output directory</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="options">Options</h2>
+      <table>
+        <thead>
+          <tr><th>Option</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--watch</code></td><td>Watch mode — rebuild on file changes</td></tr>
+          <tr><td><code>--static &lt;dir&gt;</code></td><td>Static assets directory (default: <code>./static</code>)</td></tr>
+          <tr><td><code>--post-build &lt;file&gt;</code></td><td>Run <code>.sh</code>/<code>.ts</code>/<code>.js</code> script after each build</td></tr>
+          <tr><td><code>--serve [port]</code></td><td>Start dev server (default port: <code>3000</code>, implies <code>--watch</code>)</td></tr>
+          <tr><td><code>--build [outfile]</code></td><td>Self-compile to standalone binary (default: <code>./biu</code>)</td></tr>
+          <tr><td><code>-v, --version</code></td><td>Show version</td></tr>
+          <tr><td><code>-h, --help</code></td><td>Show help</td></tr>
+        </tbody>
+      </table>
+      <p>Options can appear in any order.</p>
+
+      <h2 id="examples">Examples</h2>
+
+      <h3>Basic build</h3>
+      <pre><code>biu ./src ./dist</code></pre>
+
+      <h3>Watch mode with dev server</h3>
+      <pre><code>biu --serve 8080</code></pre>
+
+      <h3>Custom static directory + post-build script</h3>
+      <pre><code>biu --static ./public --post-build ./scripts/deploy.sh</code></pre>
+
+      <h2 id="splitting">Smart Module Splitting</h2>
+      <ul>
+        <li>
+          <strong>Independent module</strong>: if a <code>.ts</code>/<code>.js</code>
+          file's basename (e.g. <code>main.ts</code>) appears in any HTML file,
+          it's built as a separate module with content hash.
+        </li>
+        <li>
+          <strong>Auto inline</strong>: if the basename never appears in any
+          HTML, the file is automatically inlined into its importer — no
+          separate output.
+        </li>
+        <li>
+          <strong>Force inline (<code>??</code>)</strong>: append <code>??</code>
+          to force inline bundling:
+          <pre><code>import { myUtil } from "./utils.ts??";</code></pre>
+        </li>
+      </ul>
+
+      <h2 id="env">Environment Variables</h2>
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>BIU_ASSETS_EXTS</code></td><td>Extra asset extensions, e.g. <code>"glb,gltf,hdr"</code></td></tr>
+          <tr><td><code>BIU_EXCLUDED</code></td><td>Regex pattern to exclude files, e.g. <code>"test|spec"</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="more">More</h2>
+      <ul>
+        <li>Full documentation: <a href="https://github.com/mindon/biu">github.com/mindon/biu</a></li>
+        <li>Issues &amp; feedback: <a href="https://github.com/mindon/biu/issues">github.com/mindon/biu/issues</a></li>
+        <li>License: <a href="https://github.com/mindon/biu/blob/main/LICENSE">MIT</a></li>
+      </ul>
+
+      <footer>
+        <span>© <span id="year"></span> biu · MIT License</span>
+        <span>Made with <a href="https://bun.sh/">Bun</a></span>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        const CMDS = {
+          mac: {
+            prompt: "$ ",
+            text:
+              "curl -fsSL https://mindon.dev/biu/install | bash",
+          },
+          linux: {
+            prompt: "$ ",
+            text:
+              "curl -fsSL https://mindon.dev/biu/install | bash",
+          },
+          windows: {
+            prompt: "PS> ",
+            text:
+              'powershell -c "irm https://mindon.dev/biu/install.ps1 | iex"',
+          },
+        };
+
+        function detectOS() {
+          const ua = (navigator.userAgent || "").toLowerCase();
+          const platform = (
+            navigator.userAgentData?.platform ||
+            navigator.platform ||
+            ""
+          ).toLowerCase();
+          if (/win/.test(platform) || /windows/.test(ua)) return "windows";
+          if (/mac/.test(platform) || /mac os|macintosh|iphone|ipad/.test(ua))
+            return "mac";
+          return "linux"; // default for everything else (incl. Android)
+        }
+
+        const tabs = document.querySelectorAll(".tabs button");
+        const cmdPrompt = document.getElementById("cmd-prompt");
+        const cmdText = document.getElementById("cmd-text");
+        const copyBtn = document.getElementById("copy-btn");
+
+        function setOS(os) {
+          const c = CMDS[os] || CMDS.linux;
+          cmdPrompt.textContent = c.prompt;
+          cmdText.textContent = c.text;
+          tabs.forEach((b) =>
+            b.setAttribute("aria-selected", b.dataset.os === os ? "true" : "false")
+          );
+        }
+
+        tabs.forEach((b) =>
+          b.addEventListener("click", () => setOS(b.dataset.os))
+        );
+
+        copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(cmdText.textContent);
+            copyBtn.textContent = "Copied!";
+            copyBtn.classList.add("copied");
+            setTimeout(() => {
+              copyBtn.textContent = "Copy";
+              copyBtn.classList.remove("copied");
+            }, 1400);
+          } catch {
+            // Fallback: select the text
+            const r = document.createRange();
+            r.selectNode(cmdText);
+            const s = window.getSelection();
+            s.removeAllRanges();
+            s.addRange(r);
+          }
+        });
+
+        setOS(detectOS());
+        document.getElementById("year").textContent = new Date().getFullYear();
+      })();
+    </script>
+  </body>
+</html>
