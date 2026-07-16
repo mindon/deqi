@@ -71,10 +71,13 @@ Deno.serve(async (req: Request, info) => {
       pathname = `${pathname}/`;
     }
   }
-  if (pathname === "/atm/nasa/daily/follow") {
+  if (pathname.startsWith("/atm/")) {
+    pathname = pathname.replace(/^\/atm\//, "/flippize/");
+  }
+  if (pathname === "/flippize/nasa/daily/follow") {
     return await follow(search.substring(1));
   }
-  if (pathname.startsWith("/atm/nasa/daily/@")) {
+  if (pathname.startsWith("/flippize/nasa/daily/@")) {
     const today = pathname.substring(pathname.lastIndexOf("@") + 1).replace(
       ".",
       "",
@@ -95,10 +98,10 @@ Deno.serve(async (req: Request, info) => {
   let body = resp.body;
   let updated = false;
   if (resp.status >= 400) {
-    body = "Hello, DeQi - from Mindon";
+    body = "hello - mindon from ∅M〇ᶻ";
     updated = true;
   }
-  if (/^\/(atm|lib)\//.test(pathname)) {
+  if (/^\/(flippize|atm|lib|_share|_widgets)\//.test(pathname)) {
     headers.push(["Access-Control-Allow-Origin", "*"]);
     updated = true;
   }
