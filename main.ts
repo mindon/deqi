@@ -64,7 +64,7 @@ Deno.serve(async (req: Request, info) => {
           console.log(data);
         }
       } catch (err) {
-        result = err;
+        result = err as string;
       }
       return new Response(result, { status });
     } else {
@@ -98,7 +98,7 @@ Deno.serve(async (req: Request, info) => {
   let body = resp.body;
   let updated = false;
   if (resp.status >= 400) {
-    body = "hello - mindon from ∅M〇ᶻ";
+    body = "hello from ∅M〇ᶻ";
     updated = true;
   }
   if (/^\/(flippize|atm|lib|_share|_widgets)\//.test(pathname)) {

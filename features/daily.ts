@@ -1,4 +1,5 @@
-const based = "/atm/nasa/daily/";
+const based = "/flippize/nasa/daily/";
+const prefix = ""; //"../../src";
 let cacheOne: string[] = [];
 
 const cached365: { [date: string]: string } = {};
@@ -30,7 +31,7 @@ export async function daily(date: string, force = false) {
       const tag = "[ONEDAY]";
       const i = c.indexOf(tag);
       return [c.substring(0, i), c.substring(i + tag.length)];
-    })(`.${based}one.html`);
+    })(`${prefix}${based}one.html`);
   }
   if (flips && !force) {
     return new Response(
@@ -48,12 +49,12 @@ export async function daily(date: string, force = false) {
   const flipBegin = "<flip ";
   const flipEnd = "</flip>";
   const doy: [number, string][] = [];
-  for await (const dirEntry of Deno.readDir(`.${based}`)) {
+  for await (const dirEntry of Deno.readDir(`${prefix}${based}`)) {
     if (!dirEntry.isDirectory) continue;
     try {
       const year: string = dirEntry.name;
       const body = await Deno.readTextFile(
-        `.${based}${dirEntry.name}/index.html`,
+        `${prefix}${based}${dirEntry.name}/index.html`,
       );
       let i = body.indexOf(mtag);
       if (i < 0) {
@@ -160,6 +161,7 @@ const ifrx =
   /<iframe[^>]*\s+src=['"]([^"']+)['"]|<param\s+name="movie"\s+value="([^"]+)"|<param\s+name=["']fileName["']\s+value="([^"]+)"/;
 const aimg = /<a href="([^"]+)"[^>]*>\s*<IMG\s+SRC="([^"]+)"/;
 const imgx = /<img[^>]*\s+src="([^"]+)"[^>]*>/i;
+const videox = /<video[^>]+>\s*<source src="([^"]+)"/i;
 const clean = /<\/?\w+([^>]+)?>|[\r\n]+|^\s+|\s+$/g;
 const clueB = /<b>/i;
 const clueP = /<p>|<\/td>/i;
@@ -215,8 +217,14 @@ export async function day(src: string, my: string) {
     if (mx) {
       imgsrc = `/${mx[1]}`;
     } else {
-      console.warn(key, "no img or media");
-      return;
+      const mv = raw.match(videox);
+      if (mv) {
+        mediasrd = `https://apod.nasa.gov/apod/${mv[1]}`;
+      } else {
+        console.log(raw, videox);
+        console.warn(key, "no img or media");
+        return;
+      }
     }
   }
 
