@@ -1,5 +1,5 @@
 const based = "/flippize/nasa/daily/";
-const prefix = ""; //"../../src";
+const prefix = "."; //"../../src";
 let cacheOne: string[] = [];
 
 const cached365: { [date: string]: string } = {};
