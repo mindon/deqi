@@ -1,7 +1,11 @@
-<!DOCTYPE html><html><head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
-  <title>Academic Email Verification</title>
-  <style>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+      content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+    <title>Academic Email Verification</title>
+    <style>
     body {
       display: flex;
       align-items: center;
@@ -9,34 +13,65 @@
       justify-content: center;
       min-height: 100vh;
     }
-  </style>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-KMRXD8X');</script>
-  <!-- End Google Tag Manager -->
+    </style>
+    <!-- Google Tag Manager -->
+    <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != "dataLayer" ? "&l=" + l : "";
+      j.async = true;
+      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, "script", "dataLayer", "GTM-KMRXD8X");
+    </script>
+    <!-- End Google Tag Manager -->
   </head>
   <body>
-  <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRXD8X"
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRXD8X"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
+    <!-- End Google Tag Manager (noscript) -->
 
-  <div style="text-align:center">
-    <h1>AEmV: Academic Email Verification</h1>
-    <div><strong style="font-size:5rem">7755</strong> EMAILS, <strong style="font-size:5rem">6</strong> BLACKLIST</div>
-    <div style="font-size:.8rem;color:gray;margin-bottom:1rem">07/26, 2026 UPDATED</div>
-    <code>curl -X POST -d '{"email":"hello@mit.edu"}' "https://mindon.dev/academic"</code>
-    <script>function demo(v){
-      if(/^\s*$/.test(v)) return;
-      fetch('/academic',{method:'POST',body:JSON.stringify({email: v})}).then(resp=>resp.text()).then(resp=>alert(resp)).catch(err=>alert(err));
-    }</script>
-    <p><input type="search" onsearch="demo(this.value)" placeholder="try an email"></p>
-    <p><a href="https://www.paypal.com/paypalme/airoff" target="_paypal">Sponor Me on PayPal</a></p>
-    <p><a href="https://x.com/mindon" style="display: flex; align-items: center;justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+    <div style="text-align:center">
+      <h1>AEmV: Academic Email Verification</h1>
+      <div><strong style="font-size:5rem">7755</strong> EMAILS, <strong style="font-size:5rem">6</strong> BLACKLIST</div>
+      <div
+        style="font-size:.8rem;color:gray;margin-bottom:1rem">07/26, 2026 UPDATED</div>
+      <code>curl -X POST -d '{"email":"hello@mit.edu"}' "https://mindon.dev/academic"</code>
+      <script>
+      function demo(v) {
+        const mysearch = document.querySelector("#mysearch");
+        if (!v) v = mysearch.value.trim();
+        const myresp = document.querySelector("#myresp");
+        myresp.innerText = "";
+        if (/^\s*$/.test(v)) {
+          mysearch.focus();
+          return;
+        }
+        const msg = (resp) => {
+          let body = resp.toString();
+          if (body.lastIndexOf("</body>") > -1) {
+            console.log(body);
+            body = "error";
+          }
+          myresp.innerText = body;
+        };
+        myresp.innerText = "...";
+        fetch("/academic", { method: "POST", body: JSON.stringify({ email: v }) })
+          .then((resp) => resp.text()).then((resp) => msg(resp)).catch((err) =>
+            msg(err)
+          );
+      }
+      </script>
+      <p><input type="search" id="mysearch" value="hello@mit.edu" onsearch="demo()" placeholder="try an email"><button style="margin-left:8px" onclick="demo()">verify</button></p>
+      <p id="myresp"></p>
+      <p><a href="https://www.paypal.com/paypalme/airoff" target="_paypal">Sponor Me on PayPal</a></p>
+      <p><a href="https://x.com/mindon" style="display: flex; align-items: center;justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
       <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
     </svg> @MINDON</a></p>
-  </div>
-</body></html>
+    </div>
+  </body>
+</html>
