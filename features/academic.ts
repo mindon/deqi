@@ -88,6 +88,11 @@ export async function enroll(addr: string, desc: string) {
   return await kv.set(key, desc);
 }
 
+export function enrollAll(data: { key: string; desc: string }[]) {
+  data.map(({ key, desc }) => kv.set(key, desc));
+  return data.length;
+}
+
 // get ?{key, value, versionstamp}
 export async function academic(addr: string): Promise<
   | { key: Array<string>; name: string }

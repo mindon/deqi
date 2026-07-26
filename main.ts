@@ -1,6 +1,6 @@
 import { serveFile } from "jsr:@std/http/file-server";
 import { chat } from "./features/chat.ts";
-import { academic, enroll } from "./features/academic.ts";
+import { academic, enroll, enrollAll } from "./features/academic.ts";
 import { daily, follow } from "./features/daily.ts";
 
 const enrollKey = Deno.env.get("ACADEMIC_ENROLL");
@@ -35,11 +35,14 @@ Deno.serve(async (req: Request, info) => {
     return chat(req);
   }
   if (pathname == "/academic") {
+    const { headers } = req;
     if (req.method == "PUT") {
-      const { headers } = req;
       const x = headers.get("x-academic-enroll");
       if (enrollKey && x == enrollKey) {
-        const { email, desc } = await req.json();
+        const { email, desc, data } = await req.json();
+        if (data?.length) {
+          return new Response(`all = ${enrollAll(data)}`);
+        }
         if (email && desc && email?.length < 128) {
           if (
             await enroll(
@@ -84,11 +87,17 @@ Deno.serve(async (req: Request, info) => {
     );
     return await daily(today);
   }
-  if(pathname.startsWith("/gib/")) pathname = `/glucose-in-blood/${pathname.substring(5)}`;
+  if (pathname.startsWith("/gib/")) {
+    pathname = `/glucose-in-blood/${pathname.substring(5)}`;
+  }
 
-  if (!/\.(js|html|json|css)$/.test(pathname) && /^\/sp2\/[\w.$-]+$/.test(pathname)) {
-    pathname = '/sp2/index.html';
-  } if (pathname.endsWith("/")) {
+  if (
+    !/\.(js|html|json|css)$/.test(pathname) &&
+    /^\/sp2\/[\w.$-]+$/.test(pathname)
+  ) {
+    pathname = "/sp2/index.html";
+  }
+  if (pathname.endsWith("/")) {
     pathname = `${pathname}index.html`;
   }
 
