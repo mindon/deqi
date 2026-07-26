@@ -88,8 +88,8 @@ export async function enroll(addr: string, desc: string) {
   return await kv.set(key, desc);
 }
 
-export function enrollAll(data: { key: string; desc: string }[]) {
-  data.map(({ key, desc }) => kv.set(key, desc));
+export function enrollAll(data: { k: string; v: string }[]) {
+  data.map(({ k, v }) => kv.set(k, v));
   return data.length;
 }
 
