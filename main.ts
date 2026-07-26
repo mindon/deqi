@@ -39,10 +39,11 @@ Deno.serve(async (req: Request, info) => {
     if (req.method == "PUT") {
       const x = headers.get("x-academic-enroll");
       if (enrollKey && x == enrollKey) {
-        const { email, desc, data } = await req.json();
+        const data = await req.json();
         if (data?.length) {
           return new Response(`all = ${enrollAll(data)}`);
         }
+        const { email, desc } = data;
         if (email && desc && email?.length < 128) {
           if (
             await enroll(
