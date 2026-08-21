@@ -1,6 +1,0 @@
-((d)=>{let j=new URL(d.src).searchParams,m=function(u,v){let w=document.createElement(u);return Object.keys(v).map((x)=>w[x]=v[x]),w},n=[m("script",{type:"importmap",textContent:`{
-  "imports": {
-      "@lit/reactive-element/": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2.1.1/"${j.has("three")?`,"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.min.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
-      "three/fonts/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/fonts/"`:""}${j.has("qr")?',"qrcode-generator": "https://cdn.jsdelivr.net/npm/qrcode-generator@2.0.4/+esm"':""}}
-}`})];if(j.has("d3"))n.push(m("script",{src:"https://tefs-static-cdn-1300241787.file.myqcloud.com/share/d3/d3.v7.min.js",crossOrigin:"anonymous"}));if(j.has("bootstrap"))n.push(m("link",{rel:"stylesheet",href:"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",integrity:"sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",crossOrigin:"anonymous"}));let z=document.querySelector("head");n.map((u)=>document.write(u.outerHTML)),d&&setTimeout(()=>d.parentElement?.removeChild(d))})(document.currentScript);
