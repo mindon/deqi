@@ -300,11 +300,18 @@
       </header>
 
       <p class="lede">
-        A <strong>zero-config</strong>, high-performance bundler for
-        <strong>HTML + TypeScript/JavaScript</strong>, powered by
-        <a href="https://bun.sh/">Bun</a>. Smart module splitting, content
-        hashing, watch mode, dev server, optional Next.js-style backend, and
-        offline CDN caching — all in one binary.
+          Build Web pages, not frameworks.
+          <br/><br/>
+          Put HTML, Javascript, TypeScript and CSS in <strong>src/</strong>.
+          <br/>
+          Run: <code>biu --serve</code>
+          <br/>
+          That's it.
+          <br/><br/>
+          No React.<br/>
+          No Vite config.<br/>
+          No framework.<br/>
+          Just the Web.<br/><br/>
       </p>
 
       <!-- Install card with OS auto-detection -->
@@ -326,10 +333,15 @@
       </section>
 
       <h2 id="quick-start">Quick Start</h2>
-      <pre><code># Place `biu` in your PATH, then from any project directory:
-biu                        # Build ./src → ./dist
-biu ./src ./dist           # Explicit source &amp; output dirs
-biu --serve 3000           # Dev server with live reload</code></pre>
+      <pre><code># Place `biu` in your PATH, start with a starter project:
+biu a hello
+cd hello
+biu ---serve # default on port 3000
+
+# build or serve with following commands from a project directory:
+# biu                     # Build ./src → ./dist
+# biu ./src ./dist        # Explicit source &amp; output dirs
+# biu --serve 8080        # Dev server with live reload on port 8080</code></pre>
       <p>
         <em
           >Note: if there's a <code>./backend</code> directory, it will be used
