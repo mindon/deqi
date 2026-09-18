@@ -1,0 +1,123 @@
+<!DOCTYPE html><html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+<title>∅M〇ᶻ: 眼见未必为实</title>
+<style>
+body {
+    text-align: center;
+}
+.block {
+    width: 608px;
+    height: 310px;
+    position: relative;
+}
+.bg-purple {
+    background-color: rgb(133 29 245 / var(--alpha, 50%));
+}
+.bg-yellow {
+    background-color: rgb(253 240 13 / var(--alpha, 50%));
+}
+.mask {
+    position: absolute;
+    z-index: 2;
+    left: 0; right: 0;
+    top: 0; bottom: 0;
+    background-position: 10px 10px;
+    background-size: 20px 20px;
+}
+.dots-yellow {
+    background-image: radial-gradient(circle at var(--radius, 5px) var(--radius, 5px), #fdf00d var(--radius, 5px), transparent 0);
+}
+.dots-purple {
+    background-image: radial-gradient(circle at var(--radius, 5px) var(--radius, 5px), #851df5 var(--radius, 5px), transparent 0);
+}
+.container {
+    max-width: 620px;padding: 0.25rem; margin: 0 auto;
+}
+.ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 38% 33%,
+      #ffffff 0%,
+      rgba(255, 255, 255, 0.85) 5%,
+      rgba(210, 255, 251, 0.55) 14%,
+      transparent 31%
+    ),
+
+    radial-gradient(
+      ellipse at 76% 82%,
+      rgba(0, 55, 55, 0.75) 0%,
+      rgba(0, 80, 78, 0.45) 25%,
+      rgba(0, 100, 95, 0.15) 50%,
+      transparent 70%
+    ),
+
+    radial-gradient(
+      circle at 42% 38%,
+      #83f4e9 0%,
+      #72e5db 45%,
+      #55c9c1 70%,
+      #277876 100%
+    );
+}
+input:focus {
+    outline: none;
+}
+.off-bg .bg-purple,
+.off-bg .bg-yellow {
+    background-color: transparent;
+}
+.off-dots .dots-purple,
+.off-dots .dots-yellow {
+    display: none;
+}
+</style>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KMRXD8X');</script>
+<!-- End Google Tag Manager -->
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRXD8X"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<h1>∅M〇ᶻ: 眼见未必为实</h1>
+<div class="container">
+    <div style="display:flex;align-items:center;flex-direction: column;">
+        <div class="block bg-purple">
+            <div class="ball"></div>
+            <div class="mask dots-yellow"></div>
+        </div>
+        <div class="block bg-yellow">
+            <div class="ball"></div>
+            <div class="mask dots-purple"></div>
+        </div>
+    </div>
+</div>
+<script>
+const container = document.querySelector('.container');
+const cclist = container.classList;
+const cstyle = container.style;
+function adjust(inp) {
+  cstyle.setProperty('--alpha', `${inp.value*10}%`);
+  cstyle.setProperty('--radius', `${inp.value}px`);
+}
+function toggle(inp, className) {
+  cclist.toggle(className, !inp.checked);
+}
+</script>
+<p><input type="range" min="0" max="10" step="1" value="5" onchange="adjust(this)"> <label><input checked type="checkbox" onclick="toggle(this,'off-dots')">圆点</label> <label><input checked type="checkbox" onclick="toggle(this,'off-bg')">背景</label></p>
+</body>
+</html>
