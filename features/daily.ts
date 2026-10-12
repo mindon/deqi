@@ -110,6 +110,7 @@ export async function daily(date: string, force = false) {
 // console.log(await daily("0101"));
 
 const cachedDay: { [m: string]: { [d: string]: string } } = {};
+// deprecated
 export async function follow(date: string) {
   const empty = new Response("{}");
   if (!/^\d{4}([0][1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/.test(date)) {

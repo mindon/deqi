@@ -5,7 +5,7 @@
     &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
     &lt;title&gt;我的演示&lt;/title&gt;
     &lt;link href="./present.css" rel="stylesheet"&gt;
-    &lt;script type="module" src="./present.5d6s8xrx.js"&gt;&lt;/script&gt;
+    &lt;script type="module" src="./present.n6sjh9z8.js"&gt;&lt;/script&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;div class="scroll-snap"&gt;
@@ -15,11 +15,11 @@
     &lt;/div&gt;
     &lt;div id="snap-points"&gt;&lt;/div&gt;
   &lt;/body&gt;
-&lt;/html&gt;</code></pre><p><small>❝ <code>.scroll-snap</code> 容器啟用滾動快照； <code>#snap-points</code> 是右側自動生成的目錄錨點容器。</small></p><h3>➋ &lt;slide&gt; 屬性速查</h3><table><thead><tr><th>屬性</th><th>說明（*為內容頁面使用）</th><th>示例</th></tr></thead><tbody><tr><td><code>topic</code></td><td>當前頁標題，自動生成右側導航與 URL hash</td><td><code>topic="封面"</code></td></tr><tr><td><code>data-src</code></td><td>該 slide 的內容頁路徑（<b>相對於 <code>slides/</code></b>）</td><td><code>data-src="cover.html"</code></td></tr><tr><td><code>data-lazy</code></td><td>* 對應 <code>lazies.slide(key, fn)</code> 註冊的初始化函數鍵</td><td><code>data-lazy="my-init"</code></td></tr><tr><td><code>instantly</code></td><td>可选布爾屬性。設置後立即加載，不等待滾動到該頁</td><td><code>instantly</code></td></tr><tr><td><code>class="slide-center"</code></td><td>內容垂直水平居中</td><td><code>class="slide-center"</code></td></tr><tr><td><code>class="pop"</code></td><td>* 啟用點擊彈框（需配合 <code>data-pop</code>）</td><td><code>class="slide-center pop"</code></td></tr><tr><td><code>data-pop</code></td><td>* 彈框元素選擇器（一般為 <code>#xxx</code>）</td><td><code>data-pop="#info"</code></td></tr><tr><td><code>data-spot</code></td><td>* 固定彈框錨定位置（可選） <code>x,y</code>，支持百分比/負值</td><td><code>data-spot="0.5,0.3"</code></td></tr><tr><td><code>web-or-not</code></td><td>* 啟用網絡探測，配合 <code>.web-yes</code> / <code>.web-no</code> 分支顯示</td><td><code>web-or-not</code></td></tr></tbody></table><h3>➌ 路徑約定</h3><p><code>data-src="foo.html"</code> 會被 <code>present.5d6s8xrx.js</code> 解析為 <code>fetch("slides/foo.html")</code>；<br>因此 index.html 必須放在 <code>slides/</code> 的<strong>父目錄</strong>，而所有 slide 內容頁放在 <code>slides/</code> 之下。</p><pre><code>your-project/
+&lt;/html&gt;</code></pre><p><small>❝ <code>.scroll-snap</code> 容器啟用滾動快照； <code>#snap-points</code> 是右側自動生成的目錄錨點容器。</small></p><h3>➋ &lt;slide&gt; 屬性速查</h3><table><thead><tr><th>屬性</th><th>說明（*為內容頁面使用）</th><th>示例</th></tr></thead><tbody><tr><td><code>topic</code></td><td>當前頁標題，自動生成右側導航與 URL hash</td><td><code>topic="封面"</code></td></tr><tr><td><code>data-src</code></td><td>該 slide 的內容頁路徑（<b>相對於 <code>slides/</code></b>）</td><td><code>data-src="cover.html"</code></td></tr><tr><td><code>data-lazy</code></td><td>* 對應 <code>lazies.slide(key, fn)</code> 註冊的初始化函數鍵</td><td><code>data-lazy="my-init"</code></td></tr><tr><td><code>instantly</code></td><td>可选布爾屬性。設置後立即加載，不等待滾動到該頁</td><td><code>instantly</code></td></tr><tr><td><code>class="slide-center"</code></td><td>內容垂直水平居中</td><td><code>class="slide-center"</code></td></tr><tr><td><code>class="pop"</code></td><td>* 啟用點擊彈框（需配合 <code>data-pop</code>）</td><td><code>class="slide-center pop"</code></td></tr><tr><td><code>data-pop</code></td><td>* 彈框元素選擇器（一般為 <code>#xxx</code>）</td><td><code>data-pop="#info"</code></td></tr><tr><td><code>data-spot</code></td><td>* 固定彈框錨定位置（可選） <code>x,y</code>，支持百分比/負值</td><td><code>data-spot="0.5,0.3"</code></td></tr><tr><td><code>web-or-not</code></td><td>* 啟用網絡探測，配合 <code>.web-yes</code> / <code>.web-no</code> 分支顯示</td><td><code>web-or-not</code></td></tr></tbody></table><h3>➌ 路徑約定</h3><p><code>data-src="foo.html"</code> 會被 <code>present.n6sjh9z8.js</code> 解析為 <code>fetch("slides/foo.html")</code>；<br>因此 index.html 必須放在 <code>slides/</code> 的<strong>父目錄</strong>，而所有 slide 內容頁放在 <code>slides/</code> 之下。</p><pre><code>your-project/
 ├─ index.html        ← 展示頁入口
 ├─ present.css
-├─ present.5d6s8xrx.js
+├─ present.n6sjh9z8.js
 └─ slides/
    ├─ cover.html     ← &lt;slide data-src="cover.html"&gt;
    ├─ page2.html
-   └─ more.html</code></pre><h3>➍ 直接打開單頁</h3><p>所有 slide 內容頁都是<strong>完整可獨立打開</strong>的 HTML，比如： <code>/slides/cover.html</code> 可直接訪問， <code>present.5d6s8xrx.js</code> 會自動切換到「單頁模式」並添加 ❝ HOME ❞ 跳回按鈕。</p></div></slide></body></html>
+   └─ more.html</code></pre><h3>➍ 直接打開單頁</h3><p>所有 slide 內容頁都是<strong>完整可獨立打開</strong>的 HTML，比如： <code>/slides/cover.html</code> 可直接訪問， <code>present.n6sjh9z8.js</code> 會自動切換到「單頁模式」並添加 ❝ HOME ❞ 跳回按鈕。</p></div></slide></body></html>

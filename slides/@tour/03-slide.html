@@ -3,7 +3,7 @@
   &lt;head&gt;
     &lt;meta charset="utf-8"&gt;
     &lt;link href="../../present-2a558e4c.css" rel="stylesheet"&gt;
-    &lt;script type="module" src="../../present.5d6s8xrx.js"&gt;&lt;/script&gt;
+    &lt;script type="module" src="../../present.n6sjh9z8.js"&gt;&lt;/script&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;a href="../tour.html" class="home"&gt;&lt;/a&gt;
@@ -13,7 +13,7 @@
       &lt;/div&gt;
     &lt;/slide&gt;
   &lt;/body&gt;
-&lt;/html&gt;</code></pre><p>注意：<code>index.html</code> 的 <code>&lt;slide&gt;</code> 屬性（如 <code>topic</code>、<code>data-pop</code>）會與此處 <code>&lt;slide&gt;</code> 屬性<strong>合併</strong>（class 累加）。 因此可在內容頁聲明 popover/lazy 等獨立可用的配置。</p><h3>❷ <span class="tag">importmap</span> 模塊映射</h3><p>每個 slide 內容頁可以自帶 <code>&lt;script type="importmap"&gt;</code>，<code>present.5d6s8xrx.js</code> 會在加載時將其<strong>合併</strong>到主文檔的 importmap 中：(<span style="color:#ff0">⚠️注意：直接放置一個importmap合併版本在index頁面head中，以防止出現瀏覽器兼容問題</span>)</p><pre><code>&lt;head&gt;
+&lt;/html&gt;</code></pre><p>注意：<code>index.html</code> 的 <code>&lt;slide&gt;</code> 屬性（如 <code>topic</code>、<code>data-pop</code>）會與此處 <code>&lt;slide&gt;</code> 屬性<strong>合併</strong>（class 累加）。 因此可在內容頁聲明 popover/lazy 等獨立可用的配置。</p><h3>❷ <span class="tag">importmap</span> 模塊映射</h3><p>每個 slide 內容頁可以自帶 <code>&lt;script type="importmap"&gt;</code>，<code>present.n6sjh9z8.js</code> 會在加載時將其<strong>合併</strong>到主文檔的 importmap 中：(<span style="color:#ff0">⚠️注意：直接放置一個importmap合併版本在index頁面head中，以防止出現瀏覽器兼容問題</span>)</p><pre><code>&lt;head&gt;
   ...
   &lt;script type="importmap"&gt;
   {
