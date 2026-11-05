@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><title>π窝（π Walk Everything）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#262626;--card:#444;--fg:#fff;--mut:#d9dde3;--bd:#d9dde3;--ac:#3b6fe0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1318;--card:#171c23;--fg:#e6e9ee;--mut:#8b94a3;--bd:#2a313b;--ac:#6c9bff;color-scheme:dark}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+.w{max-width:1180px;margin:0 auto;padding:16px}h1{font-size:22px;margin:0 0 4px}.s{color:var(--mut);margin:0 0 14px}
+.g{display:grid;grid-template-columns:290px 1fr;gap:14px}@media(max-width:860px){.g{grid-template-columns:1fr;}}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;height:100%}.no-pad{padding:0}
+label{display:block;margin:10px 0 3px;color:var(--mut);font-size:12px}select,input[type=range],button{width:100%}
+select,button{padding:7px;border:1px solid var(--bd);border-radius:7px;background:var(--bg);color:var(--fg);font:inherit}
+button{background:var(--ac);color:#fff;border:0;margin-top:14px;cursor:pointer;font-weight:600}
+canvas#cv{touch-action:auto;cursor:default;width:100%;aspect-ratio:1;background:#0e1116;border-radius:10px 10px 0 0;display:block}
+.hint{font-size:12px;color:var(--mut);margin-top:8px}.f2{display:flex;gap:8px}.f2>div{flex:1;min-width:0}.pb{display:flex;gap:8px;align-items:center;margin-top:8px}#pp{width:auto;height:32px;margin:0;padding:0 12px;flex:none}#pg{flex:1;width:auto;min-width:0;height:32px;margin:0}.tb{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin-top:8px}.tb label{display:flex;gap:5px;align-items:center;margin:0;font-size:13px;color:var(--fg)}.tb select{width:auto;padding:4px}.tb button{width:auto;margin:0;padding:4px 10px}#vw{display:inline-flex;gap:6px;align-items:center;margin-bottom:8px}label{margin:8px 0 3px}#dz{border:1.5px dashed var(--bd);border-radius:8px;padding:12px;text-align:center;color:var(--mut);font-size:12px;cursor:pointer;margin-bottom:6px}#dz.on{border-color:var(--ac);color:var(--ac)}.pre{width:auto;flex:1;margin:0!important;padding:2px 4px;background:var(--bg);color:var(--fg);border:none}[hidden]{display:none!important}.bar{display:inline-block;width:80px;height:10px;border-radius:5px;vertical-align:middle}.row{display:flex;gap:6px;align-items:center}.row button{margin-top:6px;}.wheel{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;background:conic-gradient(from 90deg,hsl(0 90% 60%),hsl(60 90% 55%),hsl(120 80% 50%),hsl(180 80% 50%),hsl(240 90% 65%),hsl(300 80% 60%),hsl(360 90% 60%))}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px}td,th{padding:5px 8px;border-bottom:1px solid var(--bd);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:600}
+.pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}.pl canvas{width:100%;height:190px;border:1px solid var(--bd);border-radius:8px}
+h3{margin:16px 0 6px;font-size:15px}ul{margin:4px 0;padding-left:18px}#lg{text-align:center}#len{background:transparent;color: var(--fg);border: none; width:120px; padding: 2px 4px;}h1{display:flex;align-items: center;}
+</style></head><body><div class="w">
+<div class="g"><div>
+<div class="c">
+<h1><a href="https://mindon.dev/" style="display:block;font-size:1px;margin-right:4px"><img src="https://mindon.dev/flippize/0xMOz.svg" width="32" height="32" /></a>π窝（π Walk）</h1>
+<p class="s">确定性常数 π 的二进制展开，经不同局部映射规则，能否走出与随机序列不同的统计与几何结构？每次运行同时生成伪随机对照。</p>
+<label>映射规则</label><select id="rule">
+<option value="1">1 二进制方向（2 位 → 4 向）</option><option value="2">2 相对转向（0 左转 / 1 右转 90°）</option><option value="3">3 三位编码八方向</option><option value="4">4 二进制控制步长（1u / 5u）</option><option value="5">5 二进制控制角度（±137.5°）</option><option value="6">6 逐位转向 + 游程自适应步长</option><option value="7">7 十进制数字 → 十方向</option><option value="8">8 Langton 型带记忆</option><option value="9">9 强制自回避</option><option value="10">10 有限状态机海龟</option><option value="11">11 位置反馈（受限游走）</option><option value="12">12 六边形晶格</option><option value="13">13 三维游走等轴测投影</option></select>
+<div class="hint" id="ru"></div>
+<div class="f2"><div><label>数据序列来源</label><select id="src"><option value="pi">π（十进制位 → 二进制）</option><option value="sqrt2">√2（阴性对照）</option><option value="e">e（阴性对照）</option><option value="phi">φ 黄金比（阴性对照）</option><option value="r17">1/7（周期，阳性对照）</option><option value="champ">Champernowne（有规律，阳性对照）</option><option value="rnd">伪随机</option><option value="file">本地文件…</option></select></div><div style="display:none"><label>步长 u（px，1–10）</label><input type="number" id="step" value="3" min="1" max="10" step="1" style="width:100%;padding:6px"></div></div>
+<div id="gf" hidden><label>本地文件（.bin / .zip / 文本；zip 取首个文件）</label><div id="dz">拖放文件到页面任意位置，或点击此处选择<br>支持 .bin / .zip / .b64 / 文本</div><input type="file" id="fl" hidden><select id="fm"><option value="b">按字节读取（LSB→MSB）</option><option value="t">按文本 0/1 字符读取</option><option value="b64">base64 文本（解码为字节）</option></select><div class="hint" id="fi">未选择文件</div></div>
+<div id="gl"><label title="取前 N 位十进制数字 → 二进制，每字节 LSB→MSB 读取">数据长度（十进制位数） <input type="number" id="len" value="10000" min="100" max="1000000" step="100"></label><div class="row" style="flex-wrap:wrap"><button class="pre" data-n="1000">1k</button><button class="pre" data-n="10000">10k</button><button class="pre" data-n="50000">50k</button><button class="pre" data-n="100000">100k</button><button class="pre" data-n="1000000">1M</button></div></div>
+<div class="f2"><div id="gs" hidden><label>FSM 种子</label><input type="number" id="seed" value="7" min="1" max="9999" style="width:100%;padding:6px"></div><div><label>蒙特卡洛对照条数</label><select id="mc"><option value="0">关闭</option><option value="30" selected>30</option><option value="100">100</option><option value="200">200</option></select></div></div>
+<button id="go">运行实验</button>
+<div class="pb"><button id="pp">▶</button><input type="range" id="pg" min="0" max="1000" value="1000" title="回放进度"></div>
+</div></div>
+<div><div class="c no-pad"><canvas id="cv" width="1000" height="1000"></canvas><div class="tb"><label>数据<select id="view" style="width:auto"><option value="p">主序列</option><option value="r">伪随机对照</option></select></label><label>着色<select id="scheme"><option value="dir">按运动方向</option><option value="time" selected>按时间顺序渐变</option><option value="den">按局部访问密度</option></select></label>
+    <label><input type="checkbox" id="ix">缩放/拖动</label><span id="vw" hidden><select id="fit"><option value="1">自动适配全轨迹</option><option value="0">1:1 像素（居中）</option></select><b id="zv">1.00×</b><button id="zo">－</button><button id="zi">＋</button><button id="zr">复位</button></span></div><div class="hint" id="lg" style="margin:0 0 8px"></div></div></div></div>
+<div class="c" style="margin-top:14px"><h3 style="margin-top:0">实验报告</h3><div id="rep">计算中…</div></div>
+<p class="hint">数据说明：π、√2、e、φ 的预置数据（前 1 000 000 位十进制数字）按需读取并缓存；其他长度取前 N 位数字，重新转为二进制（大端字节，每字节 LSB→MSB 读取）。</p>
+</div>
+<!--__DATA_BLOCKS__-->
+<script>
+const DATA={},PRESET=["pi","sqrt2","e","phi"];
+async function loadData(s){if(DATA[s])return DATA[s];const el=document.getElementById("data-"+s);
+ if(el){DATA[s]=el.textContent.trim();return DATA[s]}
+ try{const r=await fetch("data/"+s+".b64");if(!r.ok)throw 0;DATA[s]=(await r.text()).trim();return DATA[s]}
+ catch(e){throw new Error("找不到预置数据 data/"+s+".b64：请用 http 方式打开页面，或把该文件拖入页面")}};
+const $=id=>document.getElementById(id),PI=Math.PI;
+const RAWB={},DIG={};const rawOf=s=>RAWB[s]||(RAWB[s]=Uint8Array.from(atob(DATA[s]),c=>c.charCodeAt(0)));
+function digStr(s){if(!DIG[s]){const r=rawOf(s),h=new Array(r.length);for(let i=0;i<r.length;i++)h[i]=(r[i]<16?"0":"")+r[i].toString(16);DIG[s]=BigInt("0x"+h.join(""))+""}return DIG[s]}
+const nbitsFor=nd=>Math.ceil((Math.floor(nd*3.3219281)+1)/8)*8;let BC={};
+const RN=["","每两位定一个方向，位移 u。","每位控制左/右转 90°，每步 u，易出现自回避与迷宫状结构。","每三位定一个八方向，单位向量长度 u。","前两位定方向，当前位定步长：0→u，1→5u。","每位转 ±137.5°，每步 u。","每位：0 左转 90°，1 右转 90°；步长 = u×当前连续相同位的计数。","十进制数字：把序列还原为十进制，数字 d → 方向 d×36°（十向）。大数据转换较慢。","Langton 型：未访问格按位转向（0 左 1 右）；已访问格反向转（与上次相反），不消耗位。","强制自回避：2 位定首选方向，若已访问则顺时针找下一个空位，被困即停。","有限状态机海龟：3 个状态，转移表（转向/下一状态/步长 1–2）由“种子”决定。","位置反馈：3 位一组，首位为 1 且离原点 >12u 时朝原点方向走，否则按后两位定方向。","六边形：3 位取 0–5 对应 6 个方向（60° 间隔），6/7 跳过。","三维游走投影：3 位取 0–5 对应 ±x/±y/±z，等轴测投影到二维，6/7 跳过。"];
+const SRCN={pi:"π",sqrt2:"√2",e:"e",phi:"φ",r17:"1/7（周期）",champ:"Champernowne",rnd:"伪随机",file:"本地文件"};
+let FILE=null;
+function bitsOf(src,nd,seed,L){seed=seed||20240611;
+ if(src=="file")return FILE;
+ if(PRESET.includes(src)){const key=src+nd;if(BC.key==key)return BC.b;let h=BigInt(digStr(src).slice(0,nd)).toString(16);if(h.length&1)h="0"+h;const nb=h.length/2,b=new Uint8Array(nb*8);
+  for(let i=0;i<nb;i++){const v=parseInt(h.substr(i*2,2),16);for(let j=0;j<8;j++)b[i*8+j]=(v>>j)&1}BC={key,b};return b}
+ const n=L||nbitsFor(nd),b=new Uint8Array(n);
+ if(src=="r17"){for(let i=0;i<n;i++)b[i]=i%3==2?1:0}
+ else if(src=="champ"){let i=0;for(let q=1;i<n;q++){const s=q.toString(2);for(let c=0;c<s.length&&i<n;c++)b[i++]=+s[c]}}
+ else{let s=seed;for(let i=0;i<n;i++){s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;b[i]=((t^t>>>14)>>>0)<2147483648?0:1}}
+ return b}
+function digits(b){const nb=b.length>>3,H=[];for(let i=0;i<nb;i++){let v=0;for(let j=0;j<8;j++)v|=b[i*8+j]<<j;H.push((v<16?"0":"")+v.toString(16))}return BigInt("0x"+H.join(""))+"" }
+const D4=[[0,-1],[1,0],[0,1],[-1,0]];
+function walk0(rule,b,u){const n=b.length,X=[0],Y=[0];let x=0,y=0;
+ const P=(dx,dy)=>{x+=dx;y+=dy;X.push(x);Y.push(y)};
+ if(rule==1){for(let i=0;i+1<n;i+=2){const d=D4[b[i]*2+b[i+1]];P(d[0]*u,d[1]*u)}}
+ else if(rule==2){let d=0;for(let i=0;i<n;i++){d=(d+(b[i]?1:3))&3;P(D4[d][0]*u,D4[d][1]*u)}}
+ else if(rule==3){for(let i=0;i+2<n;i+=3){const a=(b[i]*4+b[i+1]*2+b[i+2])*PI/4;P(Math.sin(a)*u,-Math.cos(a)*u)}}
+ else if(rule==4){for(let i=2;i<n;i++){const d=D4[b[i-2]*2+b[i-1]],l=b[i]?5*u:u;P(d[0]*l,d[1]*l)}}
+ else if(rule==5){let th=0;const al=137.5*PI/180;for(let i=0;i<n;i++){th+=b[i]?-al:al;P(u*Math.cos(th),u*Math.sin(th))}}
+ else{let d=0,c=0;for(let i=0;i<n;i++){c=i&&b[i]==b[i-1]?c+1:1;d=(d+(b[i]?1:3))&3;const l=u*c;P(D4[d][0]*l,D4[d][1]*l)}}
+ return{X:Float64Array.from(X),Y:Float64Array.from(Y)}}
+function walk(rule,b,u,seed){if(rule<=6)return walk0(rule,b,u);
+ const n=b.length,X=[0],Y=[0];let x=0,y=0;const info={};const P=(dx,dy)=>{x+=dx;y+=dy;X.push(x);Y.push(y)};
+ if(rule==7){for(const c of digits(b)){const a=(+c)*PI/5;P(u*Math.cos(a),u*Math.sin(a))}}
+ else if(rule==8){const M=new Map();let d=0,gx=0,gy=0,i=0,st=0;while(i<n&&st<3*n){const k=gx*4194304+gy,t=M.get(k);let turn;if(t===undefined)turn=b[i++]?1:3;else turn=t==1?3:1;M.set(k,turn);d=(d+turn)&3;gx+=D4[d][0];gy+=D4[d][1];P(D4[d][0]*u,D4[d][1]*u);st++}}
+ else if(rule==9){const S=new Set([0]);let gx=0,gy=0;info.trap=null;for(let i=0;i+1<n;i+=2){const d=b[i]*2+b[i+1];let ok=false;for(let t=0;t<4;t++){const dd=(d+t)&3,nx=gx+D4[dd][0],ny=gy+D4[dd][1],k=nx*4194304+ny;if(!S.has(k)){S.add(k);gx=nx;gy=ny;P(D4[dd][0]*u,D4[dd][1]*u);ok=true;break}}if(!ok){info.trap=X.length-1;break}}}
+ else if(rule==10){let s=(seed||1)*2654435761>>>0;const rn=()=>{s=Math.imul(s^s>>>15,2246822507)+1013904223>>>0;return s/4294967296},T=[];
+  for(let q=0;q<3;q++){T.push([]);for(let c=0;c<2;c++)T[q].push([Math.floor(rn()*3),Math.floor(rn()*3),1+Math.floor(rn()*2)])}
+  let q=0,d=0;for(let i=0;i<n;i++){const[tn,nq,l]=T[q][b[i]];d=(d+[3,0,1][tn])&3;q=nq;P(D4[d][0]*u*l,D4[d][1]*u*l)}}
+ else if(rule==11){for(let i=0;i+2<n;i+=3){let dd;if(b[i]&&Math.hypot(x,y)>12*u)dd=Math.abs(x)>Math.abs(y)?(x>0?3:1):(y>0?0:2);else dd=b[i+1]*2+b[i+2];P(D4[dd][0]*u,D4[dd][1]*u)}}
+ else if(rule==12){for(let i=0;i+2<n;i+=3){const k=b[i]*4+b[i+1]*2+b[i+2];if(k>5)continue;const a=k*PI/3;P(u*Math.cos(a),u*Math.sin(a))}}
+ else{let A=0,B=0,C=0;const c=Math.cos(PI/6);for(let i=0;i+2<n;i+=3){const k=b[i]*4+b[i+1]*2+b[i+2];if(k>5)continue;const g=k&1?1:-1,ax=k>>1;if(ax==0)A+=g;else if(ax==1)B+=g;else C+=g;X.push((A-B)*c*u);Y.push(((A+B)*.5-C)*u)}}
+ return{X:Float64Array.from(X),Y:Float64Array.from(Y),info}}
+function inter(a,b,c,d,e,f,g,h){
+ const o=(px,py,qx,qy,rx,ry)=>{const v=(qx-px)*(ry-py)-(qy-py)*(rx-px);return Math.abs(v)<1e-6?0:v>0?1:-1};
+ const on=(px,py,qx,qy,rx,ry)=>Math.min(px,qx)-1e-9<=rx&&rx<=Math.max(px,qx)+1e-9&&Math.min(py,qy)-1e-9<=ry&&ry<=Math.max(py,qy)+1e-9;
+ const o1=o(a,b,c,d,e,f),o2=o(a,b,c,d,g,h),o3=o(e,f,g,h,a,b),o4=o(e,f,g,h,c,d);
+ if(o1!=o2&&o3!=o4)return true;
+ return(o1==0&&on(a,b,c,d,e,f))||(o2==0&&on(a,b,c,d,g,h))||(o3==0&&on(e,f,g,h,a,b))||(o4==0&&on(e,f,g,h,c,d))}
+function crossings(X,Y,u){const M=Math.min(X.length-1,40000),g=6*u,H=new Map();let hit=0;
+ for(let i=0;i<M;i++){const ax=X[i],ay=Y[i],bx=X[i+1],by=Y[i+1];
+  const x0=Math.floor(Math.min(ax,bx)/g),x1=Math.floor(Math.max(ax,bx)/g),y0=Math.floor(Math.min(ay,by)/g),y1=Math.floor(Math.max(ay,by)/g);let f=false;
+  for(let gx=x0;gx<=x1;gx++)for(let gy=y0;gy<=y1;gy++){const k=gx*100003+gy;let L=H.get(k);if(!L){L=[];H.set(k,L)}
+   if(!f)for(const j of L){if(j<i-1&&inter(ax,ay,bx,by,X[j],Y[j],X[j+1],Y[j+1])){f=true;break}}
+   L.push(i)}
+  if(f)hit++}
+ return{hit,M}}
+function slope(p){const n=p.length;if(n<2)return NaN;let sx=0,sy=0,sxx=0,sxy=0;for(const[x,y]of p){sx+=x;sy+=y;sxx+=x*x;sxy+=x*y}return(n*sxy-sx*sy)/(n*sxx-sx*sx)}
+function hull(P){P.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(P.length<3)return 0;const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+ const lo=[],up=[];for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+ for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}
+ const h=lo.slice(0,-1).concat(up.slice(0,-1));let a=0;for(let i=0;i<h.length;i++){const p=h[i],q=h[(i+1)%h.length];a+=p[0]*q[1]-q[0]*p[1]}return Math.abs(a)/2}
+function full(w,u,lite){const{X,Y}=w,m=X.length-1,S=new Set(),pts=[],cc=[],K=Math.max(1,m>>5);let rev=0,len=0,home=0,first=0,a=1e18,b=-1e18,c=1e18,d=-1e18,ia=1e18,ib=-1e18,ic=1e18,id=-1e18;
+ for(let i=0;i<=m;i++){const x=X[i],y=Y[i];if(x<a)a=x;if(x>b)b=x;if(y<c)c=y;if(y>d)d=y;
+  const ix=Math.round(x/u),iy=Math.round(y/u),k=ix*4194304+iy;if(i){len+=Math.hypot(x-X[i-1],y-Y[i-1]);if(k==0){home++;if(!first)first=i}}
+  if(S.has(k)){if(i)rev++}else{S.add(k);if(!lite)pts.push([ix,iy]);if(ix<ia)ia=ix;if(ix>ib)ib=ix;if(iy<ic)ic=iy;if(iy>id)id=iy}
+  if(!lite&&i&&i%K==0)cc.push([i/m,S.size/i])}
+ const cells=(ib-ia+1)*(id-ic+1),bs=Math.max(1,(m/(lite?2e5:1.5e6))|0),bc=[];
+ for(let s=u,k=0;k<10;k++,s*=2){const T=new Set();for(let i=0;i<=m;i+=bs)T.add(Math.floor(X[i]/s)*4194304+Math.floor(Y[i]/s));if(T.size<4)break;bc.push([Math.log(1/s),Math.log(T.size)])}
+ const rm=[],st=Math.max(1,(m/(lite?1000:4000))|0);for(let L=1;L<m/8;L*=2){let s=0,q=0;for(let i=0;i+L<=m;i+=st){s+=(X[i+L]-X[i])**2+(Y[i+L]-Y[i])**2;q++}rm.push([Math.log(L),Math.log(Math.sqrt(s/q))])}
+ const o={m,cov:S.size/cells,cells,vis:S.size,rev:rev/m,len,bbox:(b-a)*(d-c),D:slope(bc),H:slope(rm),bc,rm,end:Math.hypot(X[m],Y[m]),home,first,cc,info:w.info||{}};
+ if(lite)return o;
+ const LG=Math.min(64,Math.max(2,m>>2)),rs=[],dx=[];for(let i=0;i+LG<=m;i+=st){const ddx=X[i+LG]-X[i],ddy=Y[i+LG]-Y[i];rs.push(Math.hypot(ddx,ddy)/u);dx.push(ddx/u)}
+ const mean=v=>v.reduce((s,x)=>s+x,0)/v.length,mx=mean(dx),vx=mean(dx.map(x=>(x-mx)**2));
+ return Object.assign(o,{hull:hull(pts)*u*u,cr:crossings(X,Y,u),rs,rmean:mean(rs),ku:mean(dx.map(x=>(x-mx)**4))/(vx*vx)-3})}
+async function seqStats(b){const n=b.length;let o=0,runs=1,mr=1,cr=1,ac=0;for(let i=0;i<n;i++){o+=b[i];if(i){if(b[i]!=b[i-1]){runs++;cr=1}else{cr++;if(cr>mr)mr=cr}}}
+ const p=o/n,v=p*(1-p);for(let i=0;i+1<n;i++)ac+=(b[i]-p)*(b[i+1]-p);ac=ac/(n-1)/v;
+ const ex=1+2*o*(n-o)/n,vr=2*o*(n-o)*(2*o*(n-o)-n)/(n*n*(n-1)),by=new Uint8Array(n>>3);for(let i=0;i<by.length*8;i++)by[i>>3]|=b[i]<<(i&7);
+ let gz=NaN;try{gz=(await new Response(new Blob([by]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer()).byteLength/by.length}catch(e){}
+ return{p,zm:(2*o-n)/Math.sqrt(n),zr:(runs-ex)/Math.sqrt(vr),ac,mr,gz}}
+let R=null;
+let V={z:1,x:0,y:0},RID=0,cache={},raf=0,tm=0;
+const PAL={dir:k=>"hsl("+(k*10+5)+" 90% 60%)",time:k=>"hsl("+(240*(1-k/63))+" 85% 58%)",den:k=>"hsl("+(k/63*55)+" 100% "+(22+k/63*45)+"%)"};
+function prep(w,sc){const{X,Y}=w,m=X.length-1,idx=new Uint8Array(m);let nb=64;
+ if(sc=="dir"){nb=36;for(let i=0;i<m;i++)idx[i]=Math.floor(((Math.atan2(Y[i+1]-Y[i],X[i+1]-X[i])*180/PI+360)%360)/10)%36}
+ else if(sc=="time"){for(let i=0;i<m;i++)idx[i]=Math.min(63,(i/m*64)|0)}
+ else{const c=2*R.u,M=new Map(),key=i=>Math.round((X[i]+X[i+1])/2/c)*4194304+Math.round((Y[i]+Y[i+1])/2/c);let mx=1;
+  for(let i=0;i<m;i++){const k=key(i),v=(M.get(k)||0)+1;M.set(k,v);if(v>mx)mx=v}
+  const lm=Math.log(1+mx);for(let i=0;i<m;i++)idx[i]=Math.min(63,(Math.log(1+M.get(key(i)))/lm*64)|0)}
+ const st=new Uint32Array(nb+1);for(let i=0;i<m;i++)st[idx[i]+1]++;for(let k=0;k<nb;k++)st[k+1]+=st[k];
+ const pos=st.slice(),ord=new Uint32Array(m);for(let i=0;i<m;i++)ord[pos[idx[i]]++]=i;
+ let a=1e18,b=-1e18,c=1e18,d=-1e18;for(let i=0;i<=m;i++){if(X[i]<a)a=X[i];if(X[i]>b)b=X[i];if(Y[i]<c)c=Y[i];if(Y[i]>d)d=Y[i]}
+ return{ord,st,nb,bb:[a,b,c,d]}}
+function draw(fast){if(!R)return;const w=$("view").value=="p"?R.wp:R.wr,{X,Y}=w,u=R.u,m=X.length-1,cv=$("cv"),ctx=cv.getContext("2d"),W=cv.width,sc=$("scheme").value,key=$("view").value+sc+R.id;
+ if(cache.key!=key)cache=Object.assign({key},prep(w,sc));
+ const{ord,st,nb,bb}=cache,[a,b,c,d]=bb,base=$("fit").value=="1"?(W-50)/Math.max(b-a,d-c,1):1,s=base*V.z,ox=W/2-(a+b)/2*s+V.x,oy=W/2-(c+d)/2*s+V.y,lim=Math.floor(m*$("pg").value/1000),sd=fast?Math.max(1,Math.ceil(m/250000)):1;
+ ctx.fillStyle="#0e1116";ctx.fillRect(0,0,W,W);ctx.lineWidth=Math.max(.6,Math.min(2.5,s*u*.35));ctx.globalAlpha=.85;ctx.lineCap="round";
+ for(let k=0;k<nb;k++){ctx.strokeStyle=PAL[sc=="dir"?"dir":sc=="time"?"time":"den"](k);ctx.beginPath();
+  for(let j=st[k];j<st[k+1];j+=sd){const i=ord[j];if(i>=lim)continue;const x1=X[i]*s+ox,y1=Y[i]*s+oy,x2=X[i+1]*s+ox,y2=Y[i+1]*s+oy;
+   if((x1<-20&&x2<-20)||(x1>W+20&&x2>W+20)||(y1<-20&&y2<-20)||(y1>W+20&&y2>W+20))continue;ctx.moveTo(x1,y1);ctx.lineTo(x2,y2)}
+  ctx.stroke()}
+ ctx.globalAlpha=1;[[0,"#fff"],[Math.min(m,lim),"#f33"]].forEach(([i,col])=>{ctx.fillStyle=col;ctx.beginPath();ctx.arc(X[i]*s+ox,Y[i]*s+oy,5,0,7);ctx.fill()});
+ $("zv").textContent=V.z.toFixed(V.z<10?2:0)+"×"}
+const kick=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>draw(true));clearTimeout(tm);tm=setTimeout(()=>draw(false),180)};
+function zoomAt(px,py,f){const g=Math.min(3000,Math.max(.2,V.z*f))/V.z,c=$("cv").width/2;V.x=(px-c)*(1-g)+V.x*g;V.y=(py-c)*(1-g)+V.y*g;V.z*=g;kick()}
+const cvs=$("cv"),PT=new Map(),pt=e=>{const r=cvs.getBoundingClientRect(),f=cvs.width/r.width;return[(e.clientX-r.left)*f,(e.clientY-r.top)*f]};
+cvs.addEventListener("wheel",e=>{if(!$("ix").checked)return;e.preventDefault();const p=pt(e);zoomAt(p[0],p[1],Math.exp(-e.deltaY*.0015))},{passive:false});
+cvs.onpointerdown=e=>{if(!$("ix").checked)return;cvs.setPointerCapture(e.pointerId);PT.set(e.pointerId,pt(e));cvs.style.cursor="grabbing"};
+cvs.onpointermove=e=>{if(!PT.has(e.pointerId))return;const o=PT.get(e.pointerId),n=pt(e);
+ if(PT.size==1){V.x+=n[0]-o[0];V.y+=n[1]-o[1];kick()}
+ else{const oid=[...PT.keys()].find(i=>i!=e.pointerId),q=PT.get(oid),d0=Math.hypot(o[0]-q[0],o[1]-q[1]),d1=Math.hypot(n[0]-q[0],n[1]-q[1]);if(d0>5)zoomAt((n[0]+q[0])/2,(n[1]+q[1])/2,d1/d0)}
+ PT.set(e.pointerId,n)};
+cvs.onpointerup=cvs.onpointercancel=e=>{PT.delete(e.pointerId);cvs.style.cursor=$("ix").checked?"grab":"default"};
+const rst=()=>{V={z:1,x:0,y:0};draw()};cvs.ondblclick=()=>{if($("ix").checked)rst()};$("zi").onclick=()=>zoomAt(500,500,1.5);$("zo").onclick=()=>zoomAt(500,500,1/1.5);$("zr").onclick=rst;
+const LG={dir:'<span class="wheel"></span> 颜色 = 运动方向（右 0° 起顺时针）',time:'<span class="bar" style="background:linear-gradient(90deg,hsl(240 85% 58%),hsl(180 85% 58%),hsl(120 85% 58%),hsl(60 85% 58%),hsl(0 85% 58%))"></span> 起点 → 终点（时间顺序）',den:'<span class="bar" style="background:linear-gradient(90deg,hsl(0 100% 22%),hsl(27 100% 44%),hsl(55 100% 67%))"></span> 局部访问密度：低 → 高（对数）'};
+function sch(){$("lg").innerHTML=LG[$("scheme").value]+"。白点起点，红点终点。";draw()}
+function plot(cv,ser,xl,yl){const ctx=cv.getContext("2d"),W=cv.width=cv.clientWidth*2,H=cv.height=380,fg=getComputedStyle(document.body).color;ctx.clearRect(0,0,W,H);
+ let a=1e18,b=-1e18,c=1e18,d=-1e18;for(const s of ser)for(const[x,y]of s.p){a=Math.min(a,x);b=Math.max(b,x);c=Math.min(c,y);d=Math.max(d,y)}
+ const px=x=>50+(x-a)/(b-a||1)*(W-70),py=y=>H-40-(y-c)/(d-c||1)*(H-70);
+ ctx.strokeStyle=fg;ctx.globalAlpha=.4;ctx.beginPath();ctx.moveTo(50,15);ctx.lineTo(50,H-40);ctx.lineTo(W-15,H-40);ctx.stroke();ctx.globalAlpha=1;
+ ctx.fillStyle=fg;ctx.font="22px sans-serif";ctx.fillText(xl,W/2-60,H-8);ctx.fillText(yl,56,28);
+ ser.forEach(s=>{ctx.strokeStyle=s.col;ctx.lineWidth=3;ctx.beginPath();s.p.forEach(([x,y],i)=>i?ctx.lineTo(px(x),py(y)):ctx.moveTo(px(x),py(y)));ctx.stroke()})}
+function hist(r,cap,nb=30){const h=new Array(nb).fill(0);r.forEach(v=>h[Math.min(nb-1,Math.floor(v/cap*nb))]++);return h.map((v,i)=>[(i+.5)*cap/nb,v/r.length])}
+function report(){const p=R.sp,q=R.sr,N=R.name,f=(x,n=3)=>isFinite(x)?(+x).toFixed(n):"-",k=x=>Math.round(x).toLocaleString();
+ const rows=[["步数",k(p.m),k(q.m)],["访问格点数（格宽 u）",k(p.vis),k(q.vis)],["空间覆盖率",f(p.cov*100,2)+"%",f(q.cov*100,2)+"%"],["自交/接触段数（前 "+k(p.cr.M)+" 段）",k(p.cr.hit),k(q.cr.hit)],["回访率",f(p.rev*100,2)+"%",f(q.rev*100,2)+"%"],["轨迹总长（px）",k(p.len),k(q.len)],["包围盒面积（px²）",k(p.bbox),k(q.bbox)],["凸包面积（px²）",k(p.hull),k(q.hull)],["起终点直线距离（px）",f(p.end,1),f(q.end,1)],["盒计数维数 D",f(p.D),f(q.D)],["位移标度指数 H",f(p.H),f(q.H)],["64 步位移均值（u）",f(p.rmean,2),f(q.rmean,2)],["Δx 超额峰度",f(p.ku,3),f(q.ku,3)],["回到起点次数 / 首次返回步",p.home+" / "+(p.first||"—"),q.home+" / "+(q.first||"—")]];
+ if(R.rule==9)rows.push(["自回避：被困于第几步",p.info.trap??"未被困",q.info.trap??"未被困"]);
+ const tb=(h,rs)=>'<div class="tw"><table><tr>'+h.map(x=>"<th>"+x+"</th>").join("")+"</tr>"+rs.map(r=>"<tr><td>"+r.join("</td><td>")+"</td></tr>").join("")+"</table></div>",a=R.q,c=R.qr;
+ let h=tb(["指标",N,"伪随机对照"],rows)+"<h3>序列层检验</h3>"+tb(["检验",N,"伪随机对照"],[["1 的占比 / 单比特 z",f(a.p,4)+" / "+f(a.zm,2),f(c.p,4)+" / "+f(c.zm,2)],["游程数 z",f(a.zr,2),f(c.zr,2)],["滞后 1 自相关",f(a.ac,4),f(c.ac,4)],["最长游程",a.mr,c.mr],["gzip 压缩率（≈1 为不可压缩）",f(a.gz,4),f(c.gz,4)]]);
+ let nz=0;if(R.mc)h+="<h3>蒙特卡洛显著性（"+R.mc.n+" 条随机轨迹）</h3>"+tb(["指标",N,"随机均值±标准差","z","分位"],R.mc.rows.map(r=>{if(Math.abs(r[3])<2)nz++;return[r[0],f(r[1],3),f(r[2],3)+" ± "+f(r[4],3),f(r[3],2),f(r[5]*100,1)+"%"]}));
+ const dH=p.H-q.H,dD=p.D-q.D;
+ h+='<div class="pl"><canvas id="p1"></canvas><canvas id="p2"></canvas><canvas id="p3"></canvas><canvas id="p4"></canvas></div><h3>解读</h3><ul><li>标度：H('+N+')='+f(p.H)+'，对照 '+f(q.H)+'（差 '+f(dH)+'）；D 差 '+f(dD)+'。'+(Math.abs(dH)<.04&&Math.abs(dD)<.05?'几何与标度上与随机对照难以区分。':'存在可见差异。')+'</li>'+(R.mc?'<li>蒙特卡洛：4 项指标中有 '+nz+' 项 |z|<2，即与随机分布无显著差异；其余项偏离需结合序列层检验判断。</li>':'')+'<li>对照思路：√2、e、φ 预期同样像随机（阴性对照）；1/7（周期）与 Champernowne 带明显结构（阳性对照）。若平台在阳性对照上给出大差异、在阴性对照上无差异，则 π 的“无结构”结论才可靠。</li></ul>';
+ $("rep").innerHTML=h;
+ const C1="#3b6fe0",C2="#e0803b";
+ plot($("p1"),[{p:p.rm,col:C1},{p:q.rm,col:C2}],"ln n（步）","ln RMS位移 · 蓝 主序列 / 橙 对照");
+ plot($("p2"),[{p:p.bc,col:C1},{p:q.bc,col:C2}],"ln(1/尺度)","ln 盒数 · 多尺度");
+ const cap=Math.max(1,p.rmean*3);plot($("p3"),[{p:hist(p.rs,cap),col:C1},{p:hist(q.rs,cap),col:C2}],"64 步位移 |Δ|/u","频率 · 位移分布");
+ plot($("p4"),[{p:p.cc,col:C1},{p:q.cc,col:C2}],"进度（步数占比）","访问格数/步数 · 新颖度")}
+async function run(){const msg=t=>$("rep").textContent=t;msg("计算中…");$("ru").textContent=RN[$("rule").value-0];
+ await new Promise(r=>setTimeout(r,30));
+ try{const rule=+$("rule").value,nd=Math.min(1e6,Math.max(100,Math.round(+$("len").value)||10000)),u=Math.min(10,Math.max(1,+$("step").value||3)),src=$("src").value,sd=+$("seed").value;
+  if(src=="file"&&!FILE){msg("请先选择或拖入本地文件。");return}if(PRESET.includes(src)){msg("读取预置数据 "+src+"…");await loadData(src)}
+  const L=src=="file"?FILE.length:0,bp=bitsOf(src,nd),br=bitsOf("rnd",nd,0,L),wp=walk(rule,bp,u,sd),wr=walk(rule,br,u,sd);
+  R={id:++RID,wp,wr,u,rule,name:SRCN[src],sp:full(wp,u),sr:full(wr,u)};R.q=await seqStats(bp);R.qr=await seqStats(br);
+  const want=+$("mc").value;if(want){const n=Math.max(2,Math.min(want,Math.floor(2.5e7/wp.X.length))),mets=[["覆盖率 %",s=>s.cov*100],["回访率 %",s=>s.rev*100],["H",s=>s.H],["D",s=>s.D]],V2=mets.map(()=>[]);
+   for(let i=0;i<n;i++){if(i%3==0){msg("蒙特卡洛 "+i+"/"+n+"…");await new Promise(r=>setTimeout(r))}const s=full(walk(rule,bitsOf("rnd",nd,1000+i*7919,L),u,sd),u,true);mets.forEach((mm,j)=>V2[j].push(mm[1](s)))}
+   R.mc={n,rows:mets.map((mm,j)=>{const v=V2[j],mu=v.reduce((a,b)=>a+b,0)/n,sg=Math.sqrt(v.reduce((a,b)=>a+(b-mu)**2,0)/(n-1))||1e-9,x=mm[1](R.sp);return[mm[0],x,mu,(x-mu)/sg,sg,v.filter(y=>y<x).length/n]})}}
+  $("view").options[0].text="主序列："+R.name;V={z:1,x:0,y:0};$("pg").value=1000;draw();report()}catch(e){msg("出错："+e.message)}}
+let LASTF=null;
+async function loadFile(f){LASTF=f;const fi=$("fi");let buf=new Uint8Array(await f.arrayBuffer());
+ if(/\.(b64|base64)$/i.test(f.name))$("fm").value="b64";
+ try{if(/\.zip$/i.test(f.name)&&buf[0]==80&&buf[1]==75){const dv=new DataView(buf.buffer),cm=dv.getUint16(8,true);let cs=dv.getUint32(18,true);const o=30+dv.getUint16(26,true)+dv.getUint16(28,true);if(!cs)cs=buf.length-o;const body=buf.subarray(o,o+cs);buf=cm==0?body:new Uint8Array(await new Response(new Blob([body]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer())}}catch(x){fi.textContent="zip 解析失败："+x.message;return}
+ const mode=$("fm").value;let bits;
+ if(mode=="t"){bits=Uint8Array.from(new TextDecoder().decode(buf.subarray(0,4e6)).replace(/[^01]/g,"").slice(0,3400000),c=>+c)}
+ else{if(mode=="b64"){try{let s=new TextDecoder().decode(buf).replace(/^\s*data:[^,]*,/,"").replace(/[^A-Za-z0-9+\/=_-]/g,"").replace(/-/g,"+").replace(/_/g,"/").replace(/=+$/,"");while(s.length%4)s+="=";buf=Uint8Array.from(atob(s),c=>c.charCodeAt(0))}catch(x){fi.textContent="base64 解码失败：内容不是合法的 base64";return}}
+  buf=buf.subarray(0,425000);bits=new Uint8Array(buf.length*8);for(let i=0;i<buf.length;i++)for(let j=0;j<8;j++)bits[i*8+j]=(buf[i]>>j)&1}
+ if(bits.length<16){fi.textContent="可用比特太少";return}
+ FILE=bits;fi.textContent=f.name+" → "+bits.length.toLocaleString()+" 比特（最多取 ≈340 万比特）";$("src").value="file";ui();run()}
+async function takeFile(f){const m=f.name.match(/^(pi|sqrt2|e|phi)\.b64$/i);
+ if(m){DATA[m[1].toLowerCase()]=(await f.text()).trim();$("fi").textContent="已载入预置数据 "+m[1];$("src").value=m[1].toLowerCase();ui();run()}else loadFile(f)}
+$("dz").onclick=()=>$("fl").click();$("fl").onchange=e=>{if(e.target.files[0])takeFile(e.target.files[0]);e.target.value=""};$("fm").onchange=()=>{if(LASTF)loadFile(LASTF)};
+addEventListener("dragover",e=>{e.preventDefault();$("gf").hidden=false;$("dz").classList.add("on")});
+addEventListener("dragleave",e=>{if(!e.relatedTarget){$("dz").classList.remove("on");ui()}});
+addEventListener("drop",e=>{e.preventDefault();$("dz").classList.remove("on");ui();const f=e.dataTransfer.files[0];if(f)takeFile(f)});
+$("src").onchange=()=>{ui();run()};$("len").onchange=run;document.querySelectorAll(".pre").forEach(b=>b.onclick=()=>{$("len").value=b.dataset.n;run()});$("seed").onchange=run;$("mc").onchange=run;$("pg").oninput=()=>kick();
+let pl=0;$("pp").onclick=()=>{if(pl){clearInterval(pl);pl=0;$("pp").textContent="▶";return}if(+$("pg").value>=1000)$("pg").value=0;$("pp").textContent="⏸";pl=setInterval(()=>{$("pg").value=+$("pg").value+10;draw(true);if(+$("pg").value>=1000){clearInterval(pl);pl=0;$("pp").textContent="▶";draw()}},40)};
+$("go").onclick=run;$("step").onchange=run;$("view").onchange=()=>draw();$("fit").onchange=rst;$("scheme").onchange=sch;sch();$("rule").onchange=()=>{ui();run()};
+function ui(){$("gs").hidden=$("rule").value!="10";const f=$("src").value=="file";$("gf").hidden=!f;$("gl").hidden=f}
+$("ix").onchange=()=>{const on=$("ix").checked;$("vw").hidden=!on;cvs.style.touchAction=on?"none":"auto";cvs.style.cursor=on?"grab":"default";if(!on){$("fit").value="1";V={z:1,x:0,y:0};draw()}};
+ui();run();
+</script></body></html>
