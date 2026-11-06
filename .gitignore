@@ -2,4 +2,5 @@
 tr.ts
 deno.lock
 /docs
-.biu/
+.*/
+node_modules/
